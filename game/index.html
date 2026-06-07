@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>象与骑象人 — 互动叙事游戏</title>
+  <script src="../shared/js/canonical-entry.js"></script>
+  <style>
+:root {
+  --c-el: #E8873A;
+  --c-el-bg: #FFF3E0;
+  --c-el-light: #FFE0B2;
+  --c-ri: #2B5EA7;
+  --c-ri-bg: #E3F2FD;
+  --c-ri-light: #BBDEFB;
+  --c-ha: #4CAF50;
+  --c-ha-bg: #E8F5E9;
+  --c-ha-light: #C8E6C9;
+  --c-bg: #FDF6EC;
+  --c-bg-warm: #FFF8E1;
+  --c-bg-cool: #E8EAF6;
+  --c-txt: #2C2C2C;
+  --c-txt2: #666;
+  --c-txt3: #999;
+  --c-bdr: #E0D5C7;
+  --c-wh: #FFF;
+  --c-danger: #E53935;
+  --ff: "Trebuchet MS", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --ff-serif: Georgia, "Times New Roman", "Songti SC", "STSong", serif;
+  --fs: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 24px;
+  --fs-xxl: 28px;
+  --fs-sm: 14px;
+  --fs-xs: 12px;
+  --lh: 1.8;
+  --sp-xs: 4px;
+  --sp-s: 8px;
+  --sp-m: 16px;
+  --sp-l: 24px;
+  --sp-xl: 32px;
+  --r-s: 6px;
+  --r-m: 10px;
+  --r-l: 16px;
+  --r-xl: 24px;
+  --sh-s: 0 1px 3px rgba(0,0,0,.06);
+  --sh-m: 0 4px 12px rgba(0,0,0,.08);
+  --sh-l: 0 8px 24px rgba(0,0,0,.12);
+  --tr: .3s ease;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: var(--fs); scroll-behavior: smooth; }
+body {
+  position: relative;
+  font-family: var(--ff);
+  font-size: var(--fs);
+  line-height: var(--lh);
+  color: var(--c-txt);
+  background: var(--c-bg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 1s ease;
+  isolation: isolate;
+}
+
+.hdr {
+  text-align: center;
+  padding: var(--sp-l) var(--sp-m) var(--sp-m);
+  background: var(--c-wh);
+  border-bottom: 1px solid var(--c-bdr);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--sh-s);
+}
+.hdr-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-m);
+  margin-bottom: var(--sp-m);
+}
+.start-mode .hdr {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1120px, calc(100% - 24px));
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  z-index: 120;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-m);
+  pointer-events: none;
+}
+.start-mode .hdr-top {
+  display: none;
+}
+.start-mode .emotion-panel,
+.start-mode .hdr-actions {
+  pointer-events: auto;
+}
+.start-mode .emotion-panel {
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.start-mode .emotion-bar {
+  display: grid;
+  grid-template-columns: auto minmax(48px, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 118px;
+  padding: 8px 12px;
+  background: rgba(7, 16, 11, 0.26);
+  border-color: rgba(243, 235, 221, 0.16);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(6px);
+}
+.start-mode .bar-label,
+.start-mode .bar-val {
+  color: rgba(247, 241, 231, 0.92);
+}
+.start-mode .bar-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(243, 235, 221, 0.12);
+  color: #3F5A45;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.22);
+  white-space: nowrap;
+}
+.start-mode .bar-track {
+  background: rgba(255, 255, 255, 0.14);
+  min-width: 52px;
+}
+.start-mode .hdr-actions {
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+.start-mode .btn-sm {
+  background: rgba(7, 16, 11, 0.28);
+  color: rgba(248, 242, 232, 0.92);
+  border-color: rgba(243, 235, 221, 0.26);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(6px);
+}
+.start-mode .btn-sm:hover {
+  background: rgba(243, 235, 221, 0.14);
+  color: #FFF7EC;
+  border-color: rgba(243, 235, 221, 0.4);
+}
+.hdr h1 {
+  font-size: var(--fs-xl);
+  color: var(--c-el);
+  letter-spacing: 2px;
+}
+.hdr-sub {
+  color: var(--c-txt2);
+  font-size: var(--fs-sm);
+}
+
+.emotion-panel {
+  display: flex;
+  gap: var(--sp-s);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.emotion-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--r-s);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  min-width: 120px;
+}
+.emotion-bar.el { background: var(--c-el-bg); color: #BF6C20; }
+.emotion-bar.ri { background: var(--c-ri-bg); color: #1A4A8A; }
+.emotion-bar.ha { background: var(--c-ha-bg); color: #2E7D32; }
+.emotion-bar .bar-label { white-space: nowrap; }
+.emotion-bar .bar-track {
+  flex: 1;
+  height: 6px;
+  background: rgba(0,0,0,.08);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 40px;
+}
+.emotion-bar .bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+.emotion-bar.el .bar-fill { background: var(--c-el); }
+.emotion-bar.ri .bar-fill { background: var(--c-ri); }
+.emotion-bar.ha .bar-fill { background: var(--c-ha); }
+.emotion-bar .bar-val {
+  min-width: 24px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.hdr-actions {
+  display: flex;
+  gap: var(--sp-s);
+  justify-content: center;
+  margin-top: var(--sp-s);
+}
+.btn-sm {
+  padding: 3px 10px;
+  font-size: var(--fs-xs);
+  font-family: var(--ff);
+  border: 1px solid var(--c-bdr);
+  border-radius: var(--r-s);
+  background: var(--c-wh);
+  color: var(--c-txt2);
+  cursor: pointer;
+  transition: all var(--tr);
+}
+.btn-sm:hover { border-color: var(--c-el); color: var(--c-el); }
+
+.ctn {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--sp-xl) var(--sp-m);
+  position: relative;
+}
+.start-mode .ctn {
+  max-width: none;
+  width: 100%;
+  padding: 0;
+}
+
+/* === Forest Progress Bar === */
+.forest-progress {
+  margin-bottom: var(--sp-l);
+  text-align: center;
+}
+.forest-progress .progress-label {
+  font-size: var(--fs-xs);
+  color: #6A655B;
+  margin-bottom: 10px;
+  letter-spacing: 0.08em;
+}
+.forest-svg {
+  width: 100%;
+  height: auto;
+  border-radius: var(--r-m);
+  overflow: hidden;
+  background: rgba(247, 243, 235, 0.82);
+  border: 1px solid rgba(26, 25, 23, 0.1);
+  box-shadow: 0 8px 22px rgba(20, 20, 18, 0.05);
+}
+
+.ch-t {
+  text-align: center;
+  font-size: var(--fs-lg);
+  color: var(--c-ri);
+  margin-bottom: var(--sp-l);
+  padding-bottom: var(--sp-s);
+  border-bottom: 2px solid #4A82C7;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.ch-t.visible { opacity: 1; transform: translateY(0); }
+
+.st-t {
+  font-size: var(--fs);
+  line-height: 2;
+  color: var(--c-txt);
+  white-space: pre-wrap;
+  margin-bottom: var(--sp-xl);
+  padding: var(--sp-l) var(--sp-xl);
+  background: var(--c-wh);
+  border-radius: var(--r-l);
+  box-shadow: var(--sh-m);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease 0.1s, transform 0.5s ease 0.1s;
+  cursor: pointer;
+  position: relative;
+  min-height: 60px;
+}
+.st-t.visible { opacity: 1; transform: translateY(0); }
+.st-t .skip-hint {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: var(--fs-xs);
+  color: var(--c-txt3);
+  opacity: 0;
+  transition: opacity var(--tr);
+}
+.st-t.typing .skip-hint { opacity: 1; }
+
+.chs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-m);
+}
+.ch-c {
+  padding: var(--sp-m) var(--sp-l);
+  background: var(--c-wh);
+  border: 2px solid var(--c-bdr);
+  border-radius: var(--r-m);
+  cursor: pointer;
+  transition: all var(--tr);
+  font-size: var(--fs);
+  line-height: var(--lh);
+  color: var(--c-txt);
+  text-align: left;
+  opacity: 0;
+  transform: translateX(-10px);
+  position: relative;
+  overflow: hidden;
+}
+.ch-c.visible { opacity: 1; transform: translateX(0); }
+.ch-c::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 4px;
+  transition: width var(--tr);
+}
+.ch-c.elephant::before { background: var(--c-el); }
+.ch-c.rider::before { background: var(--c-ri); }
+.ch-c.harmony::before { background: var(--c-ha); }
+.ch-c:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sh-m);
+}
+.ch-c.elephant:hover { border-color: var(--c-el); background: var(--c-el-bg); }
+.ch-c.rider:hover { border-color: var(--c-ri); background: var(--c-ri-bg); }
+.ch-c.harmony:hover { border-color: var(--c-ha); background: var(--c-ha-bg); }
+.ch-c:active { transform: translateY(0); }
+
+.end-c {
+  text-align: center;
+  padding: var(--sp-xl) var(--sp-l);
+  border-radius: var(--r-xl);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.end-c.visible { opacity: 1; transform: translateY(0); }
+.end-c.end-harmony {
+  background: linear-gradient(135deg, #FFF8E1, #E8F5E9);
+  border: 2px solid var(--c-ha);
+}
+.end-c.end-balance {
+  background: linear-gradient(135deg, #FFF8E1, #EDE7F6);
+  border: 2px solid #8D6E63;
+}
+.end-c.end-elephant {
+  background: linear-gradient(135deg, #FFF3E0, #FFEBEE);
+  border: 2px solid var(--c-el);
+}
+.end-c.end-rider {
+  background: linear-gradient(135deg, #E3F2FD, #EDE7F6);
+  border: 2px solid var(--c-ri);
+}
+.end-c .end-icon { font-size: 48px; margin-bottom: var(--sp-m); }
+.end-c h2 { margin-bottom: var(--sp-s); font-size: var(--fs-xl); }
+.end-c .end-subtitle { color: var(--c-txt2); margin-bottom: var(--sp-m); font-size: var(--fs-sm); }
+.end-c .end-text {
+  text-align: left;
+  white-space: pre-wrap;
+  line-height: 2;
+  margin-bottom: var(--sp-l);
+  padding: var(--sp-m);
+  background: rgba(255,255,255,.6);
+  border-radius: var(--r-m);
+}
+.end-c .end-insight {
+  text-align: left;
+  padding: var(--sp-m);
+  background: rgba(255,255,255,.8);
+  border-radius: var(--r-m);
+  border-left: 4px solid var(--c-ha);
+  margin-bottom: var(--sp-l);
+  font-size: var(--fs-sm);
+  line-height: 1.8;
+}
+.end-c.end-balance .end-insight { border-left-color: #8D6E63; }
+.end-c.end-elephant .end-insight { border-left-color: var(--c-el); }
+.end-c.end-rider .end-insight { border-left-color: var(--c-ri); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-s) var(--sp-xl);
+  font-size: var(--fs);
+  font-family: var(--ff);
+  font-weight: 500;
+  border: 2px solid transparent;
+  border-radius: var(--r-m);
+  cursor: pointer;
+  transition: all var(--tr);
+  user-select: none;
+}
+.btn:active { transform: scale(.97); }
+.btn-primary {
+  background: var(--c-el);
+  color: var(--c-wh);
+}
+.btn-primary:hover { background: #D07530; }
+.btn-outline {
+  background: transparent;
+  color: var(--c-el);
+  border-color: var(--c-el);
+}
+.btn-outline:hover { background: var(--c-el); color: var(--c-wh); }
+
+/* === Start Screen === */
+.start-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  text-align: center;
+  padding: clamp(48px, 8vw, 88px) var(--sp-xl);
+  overflow: hidden;
+  background-image:
+    linear-gradient(180deg, rgba(9, 18, 12, 0.12) 0%, rgba(8, 18, 12, 0.24) 42%, rgba(8, 15, 11, 0.44) 100%),
+    radial-gradient(circle at 50% 24%, rgba(245, 237, 204, 0.18) 0%, rgba(245, 237, 204, 0.06) 18%, rgba(245, 237, 204, 0) 34%),
+    url("./assets/背景1.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 -96px 136px rgba(6, 10, 8, 0.26);
+}
+.start-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 248, 230, 0.08) 0%, rgba(255, 248, 230, 0.01) 26%),
+    radial-gradient(circle at 52% 26%, rgba(255, 248, 220, 0.16), rgba(255, 248, 220, 0) 30%);
+  -webkit-backdrop-filter: saturate(1.08) contrast(1.06) brightness(1.03);
+  backdrop-filter: saturate(1.08) contrast(1.06) brightness(1.03);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.start-screen > * {
+  position: relative;
+  z-index: 1;
+}
+.start-screen .start-icon {
+  display: none;
+}
+.start-screen .start-title {
+  font-family: var(--ff-serif);
+  font-size: var(--fs-xxl);
+  color: #F6F0E3;
+  margin-bottom: var(--sp-m);
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+}
+.start-screen .start-desc {
+  font-family: var(--ff);
+  color: rgba(247, 242, 232, 0.92);
+  max-width: 520px;
+  margin-bottom: var(--sp-xl);
+  line-height: 1.8;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.28);
+}
+.start-screen .start-btns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-m);
+  width: 220px;
+}
+.start-screen .start-tip {
+  font-family: var(--ff);
+  margin-top: var(--sp-xl);
+  font-size: var(--fs-xs);
+  color: rgba(240, 234, 223, 0.78);
+  max-width: 420px;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.28);
+}
+.start-screen .btn {
+  font-family: var(--ff);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.start-screen .btn-primary {
+  background: rgba(202, 136, 74, 0.92);
+  border-color: rgba(202, 136, 74, 0.92);
+  box-shadow: 0 8px 24px rgba(31, 24, 14, 0.24);
+}
+.start-screen .btn-primary:hover {
+  background: rgba(214, 149, 86, 0.96);
+}
+.start-screen.start-animate .start-title,
+.start-screen.start-animate .start-desc,
+.start-screen.start-animate .start-btns,
+.start-screen.start-animate .start-tip {
+  animation-fill-mode: both;
+}
+.start-screen.start-animate .start-title {
+  animation: startFadeLift 1.05s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.start-screen.start-animate .start-desc {
+  animation: startFadeLift 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.18s;
+}
+.start-screen.start-animate .start-btns {
+  animation: startFadeLift 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.36s;
+}
+.start-screen.start-animate .start-tip {
+  animation: startFadeLift 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
+}
+.start-screen.start-animate .btn-primary {
+  animation:
+    startButtonBloom 1.1s cubic-bezier(0.2, 0.9, 0.25, 1) 0.42s both,
+    startButtonBreath 3.2s ease-in-out 1.7s infinite;
+}
+.start-screen .btn-primary {
+  transform-origin: center;
+}
+.start-screen .btn-primary:hover {
+  transform: translateY(-1px);
+}
+.start-screen .btn-primary:active {
+  transform: scale(0.98);
+}
+.start-screen .btn-outline {
+  color: #F3EBDD;
+  border-color: rgba(243, 235, 221, 0.72);
+  background: rgba(8, 17, 12, 0.12);
+  backdrop-filter: blur(3px);
+}
+.start-screen .btn-outline:hover {
+  background: rgba(243, 235, 221, 0.16);
+  color: #FFF8EE;
+  border-color: rgba(243, 235, 221, 0.88);
+}
+
+@keyframes startFadeLift {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.985);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes startButtonBloom {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.92);
+    box-shadow: 0 0 0 rgba(31, 24, 14, 0);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 18px 38px rgba(31, 24, 14, 0.28);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    box-shadow: 0 8px 24px rgba(31, 24, 14, 0.24);
+  }
+}
+
+@keyframes startButtonBreath {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(31, 24, 14, 0.24);
+  }
+  50% {
+    box-shadow: 0 14px 32px rgba(31, 24, 14, 0.32);
+  }
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(0,0,0,.75);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: var(--r-m);
+  font-size: var(--fs-sm);
+  opacity: 0;
+  transition: all .3s ease;
+  z-index: 999;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+body:not(.start-mode) {
+  background: #DEE6D8;
+}
+
+body:not(.start-mode)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(180deg, rgba(16, 31, 22, 0.18) 0%, rgba(16, 31, 22, 0.08) 18%, rgba(16, 31, 22, 0.2) 100%),
+    radial-gradient(circle at 50% 18%, rgba(241, 236, 214, 0.2) 0%, rgba(241, 236, 214, 0.08) 18%, rgba(241, 236, 214, 0) 36%),
+    url("./assets/游戏界面.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transform-origin: center center;
+  animation: forestBreath 15s ease-in-out infinite alternate;
+}
+
+body:not(.start-mode)::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 16%, rgba(255, 250, 236, 0.18) 0%, rgba(255, 250, 236, 0.08) 20%, rgba(255, 250, 236, 0) 42%),
+    radial-gradient(circle at 20% 58%, rgba(230, 237, 227, 0.16) 0%, rgba(230, 237, 227, 0.05) 20%, rgba(230, 237, 227, 0) 42%),
+    radial-gradient(circle at 82% 62%, rgba(226, 235, 224, 0.14) 0%, rgba(226, 235, 224, 0.04) 18%, rgba(226, 235, 224, 0) 40%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(232, 238, 230, 0.08) 48%, rgba(220, 229, 218, 0.12) 100%);
+  mix-blend-mode: screen;
+  animation: mistBreath 8.5s ease-in-out infinite alternate;
+}
+
+@keyframes forestBreath {
+  0% {
+    transform: scale(1);
+    filter: saturate(1.02) brightness(0.98);
+  }
+  100% {
+    transform: scale(1.035);
+    filter: saturate(1.06) brightness(1.03);
+  }
+}
+
+@keyframes mistBreath {
+  0% {
+    opacity: 0.72;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.03) translateY(-8px);
+  }
+}
+
+body:not(.start-mode) .hdr {
+  width: min(1120px, calc(100% - 24px));
+  margin: 14px auto 0;
+  padding: 18px 22px 16px;
+  background:
+    radial-gradient(circle at 84% 18%, rgba(255, 248, 231, 0.14), transparent 24%),
+    rgba(244, 248, 241, 0.76);
+  border: 1px solid rgba(232, 225, 212, 0.62);
+  border-radius: 30px 36px 28px 40px / 28px 36px 38px 26px;
+  box-shadow: 0 18px 40px -26px rgba(25, 38, 28, 0.28);
+  backdrop-filter: blur(10px);
+}
+
+body:not(.start-mode) .hdr h1 {
+  color: #4F6447;
+  letter-spacing: 0.08em;
+}
+
+body:not(.start-mode) .hdr-sub {
+  color: #7C776E;
+}
+
+body:not(.start-mode) .emotion-panel {
+  gap: 10px;
+}
+
+body:not(.start-mode) .emotion-bar {
+  display: grid;
+  grid-template-columns: auto minmax(42px, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 126px;
+  padding: 8px 12px;
+  border: 1px solid rgba(222, 216, 207, 0.84);
+  border-radius: 999px;
+  box-shadow: 0 10px 28px -24px rgba(93, 112, 82, 0.28);
+}
+
+body:not(.start-mode) .emotion-bar.el { background: rgba(240, 235, 229, 0.86); color: #9A6A43; }
+body:not(.start-mode) .emotion-bar.ri { background: rgba(236, 244, 233, 0.96); color: #5D7052; }
+body:not(.start-mode) .emotion-bar.ha { background: rgba(232, 242, 227, 0.98); color: #6C7C59; }
+body:not(.start-mode) .emotion-bar .bar-label { color: #5A554E; }
+body:not(.start-mode) .emotion-bar .bar-track { background: rgba(44, 44, 36, 0.08); }
+body:not(.start-mode) .emotion-bar .bar-val { color: #6A655B; }
+
+body:not(.start-mode) .hdr-actions {
+  margin-top: 12px;
+}
+
+body:not(.start-mode) .btn-sm,
+body:not(.start-mode) .btn {
+  border-radius: 999px;
+  font-weight: 700;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body:not(.start-mode) .btn-sm:hover,
+body:not(.start-mode) .btn:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+body:not(.start-mode) .btn-sm {
+  background: rgba(249, 251, 246, 0.72);
+  color: #5D7052;
+  border-color: rgba(93, 112, 82, 0.18);
+  box-shadow: 0 12px 24px -22px rgba(93, 112, 82, 0.34);
+}
+
+body:not(.start-mode) .btn-sm:hover {
+  background: rgba(93, 112, 82, 0.1);
+  color: #4F6447;
+  border-color: rgba(93, 112, 82, 0.28);
+}
+
+body:not(.start-mode) .btn-primary {
+  background: #5D7052;
+  color: #F3F4F1;
+  border-color: #5D7052;
+  box-shadow: 0 6px 22px -8px rgba(93, 112, 82, 0.24);
+}
+
+body:not(.start-mode) .btn-primary:hover {
+  background: #516247;
+}
+
+body:not(.start-mode) .btn-outline,
+body:not(.start-mode) .btn-secondary {
+  background: rgba(255, 255, 252, 0.7);
+  color: #C18C5D;
+  border-color: #C18C5D;
+}
+
+body:not(.start-mode) .btn-outline:hover,
+body:not(.start-mode) .btn-secondary:hover {
+  background: rgba(193, 140, 93, 0.12);
+  color: #A9774C;
+}
+
+body:not(.start-mode) .ctn {
+  max-width: 860px;
+  padding: 30px 16px 56px;
+}
+
+body:not(.start-mode) #game-screen {
+  position: relative;
+}
+
+body:not(.start-mode) .forest-progress {
+  margin-bottom: 26px;
+}
+
+body:not(.start-mode) .forest-svg {
+  background: rgba(248, 250, 246, 0.76);
+  border: 1px solid rgba(232, 225, 212, 0.54);
+  border-radius: 30px;
+  box-shadow: 0 18px 34px -28px rgba(25, 38, 28, 0.22);
+}
+
+body:not(.start-mode) .ch-t {
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 8px 18px;
+  color: #314734;
+  border-bottom: 0;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: rgba(248, 250, 246, 0.42);
+  border: 1px solid rgba(255, 247, 231, 0.38);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 12px 28px -24px rgba(20, 34, 23, 0.42);
+  text-shadow: 0 1px 0 rgba(255, 251, 242, 0.45), 0 2px 18px rgba(17, 31, 22, 0.18);
+}
+
+body:not(.start-mode) .st-t {
+  padding: 26px 28px;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(255, 249, 234, 0.1), transparent 22%),
+    rgba(248, 250, 246, 0.74);
+  border: 1px solid rgba(232, 225, 212, 0.5);
+  border-radius: 30px 38px 28px 42px / 30px 34px 42px 26px;
+  box-shadow: 0 20px 40px -28px rgba(25, 38, 28, 0.24);
+  color: #36352E;
+  line-height: 2.02;
+}
+
+body:not(.start-mode) .st-t .skip-hint {
+  color: #8A857B;
+}
+
+body:not(.start-mode) .ch-c {
+  padding: 18px 22px;
+  background: rgba(248, 250, 246, 0.7);
+  border: 1px solid rgba(232, 225, 212, 0.46);
+  border-radius: 28px 34px 26px 38px / 26px 30px 38px 24px;
+  box-shadow: 0 16px 30px -28px rgba(25, 38, 28, 0.24);
+}
+
+body:not(.start-mode) .ch-c::before {
+  top: 10px;
+  bottom: 10px;
+  left: 10px;
+  width: 6px;
+  border-radius: 999px;
+}
+
+body:not(.start-mode) .ch-c:hover {
+  transform: translateY(-4px) rotate(-0.2deg);
+  box-shadow: 0 24px 40px -28px rgba(93, 112, 82, 0.3);
+}
+
+body:not(.start-mode) .ch-c.elephant:hover { border-color: rgba(193, 140, 93, 0.52); background: rgba(245, 237, 226, 0.96); }
+body:not(.start-mode) .ch-c.rider:hover { border-color: rgba(93, 112, 82, 0.5); background: rgba(243, 246, 239, 0.98); }
+body:not(.start-mode) .ch-c.harmony:hover { border-color: rgba(135, 153, 114, 0.48); background: rgba(244, 246, 238, 0.98); }
+
+body:not(.start-mode) .end-c {
+  padding: 34px 28px;
+  border-radius: 36px 46px 34px 48px / 36px 34px 48px 30px;
+  border-width: 1px;
+  box-shadow: 0 24px 48px -30px rgba(25, 38, 28, 0.24);
+}
+
+body:not(.start-mode) .end-c.end-harmony {
+  background: rgba(235, 244, 231, 0.96);
+  border-color: rgba(135, 153, 114, 0.5);
+}
+
+body:not(.start-mode) .end-c.end-balance {
+  background: rgba(244, 240, 232, 0.96);
+  border-color: rgba(141, 110, 99, 0.42);
+}
+
+body:not(.start-mode) .end-c.end-elephant {
+  background: rgba(248, 241, 234, 0.94);
+  border-color: rgba(193, 140, 93, 0.5);
+}
+
+body:not(.start-mode) .end-c.end-rider {
+  background: rgba(238, 246, 234, 0.96);
+  border-color: rgba(93, 112, 82, 0.48);
+}
+
+body:not(.start-mode) .end-c .end-subtitle {
+  color: #7C776E;
+}
+
+body:not(.start-mode) .end-c .end-text,
+body:not(.start-mode) .end-c .end-insight {
+  background: rgba(255, 255, 252, 0.7);
+  border-radius: 24px;
+  border: 1px solid rgba(222, 216, 207, 0.74);
+}
+
+body:not(.start-mode) .end-c .end-insight {
+  border-left: 0;
+}
+
+@media (max-width: 768px) {
+  :root { --fs: 15px; --fs-lg: 17px; --fs-xl: 20px; --fs-xxl: 24px; }
+  .ctn { padding: var(--sp-m) var(--sp-s); }
+  .st-t { padding: var(--sp-m); }
+  .emotion-panel { gap: 4px; }
+  .emotion-bar { min-width: 100px; padding: 3px 6px; font-size: 11px; }
+  .hdr { padding: var(--sp-m) var(--sp-s) var(--sp-s); }
+  .start-mode .hdr {
+    top: 10px;
+    width: calc(100% - 16px);
+    gap: 8px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .start-mode .emotion-panel {
+    justify-content: center;
+  }
+  .start-mode .hdr-actions {
+    justify-content: center;
+  }
+  .start-screen {
+    min-height: 100vh;
+    padding: 122px var(--sp-m) 40px;
+    background-position: center center;
+  }
+
+  body:not(.start-mode) .hdr {
+    width: calc(100% - 16px);
+    margin-top: 10px;
+    padding: 14px 14px 12px;
+    border-radius: 24px;
+  }
+
+  body:not(.start-mode) .emotion-panel {
+    justify-content: center;
+    gap: 8px;
+  }
+
+  body:not(.start-mode) .emotion-bar {
+    min-width: calc(50% - 8px);
+    padding: 7px 10px;
+  }
+
+  body:not(.start-mode) .hdr-actions {
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  body:not(.start-mode) .ctn {
+    padding: 20px 8px 40px;
+  }
+
+  body:not(.start-mode) .forest-progress {
+    margin-bottom: 18px;
+  }
+
+  body:not(.start-mode) .forest-svg {
+    border-radius: 22px;
+  }
+
+  body:not(.start-mode) .ch-t {
+    padding: 7px 14px;
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  body:not(.start-mode) .st-t {
+    padding: 20px 18px;
+    line-height: 1.9;
+    border-radius: 24px 28px 24px 30px / 24px 28px 30px 22px;
+  }
+
+  body:not(.start-mode) .ch-c {
+    padding: 16px 18px 16px 20px;
+    border-radius: 22px 28px 22px 30px / 22px 26px 30px 20px;
+  }
+
+  body:not(.start-mode) .end-c {
+    padding: 26px 18px;
+    border-radius: 28px 34px 28px 36px / 28px 28px 36px 24px;
+  }
+}
+@media (max-width: 480px) {
+  .hdr {
+    padding: var(--sp-s);
+  }
+
+  .emotion-panel {
+    width: 100%;
+  }
+
+  .emotion-bar {
+    min-width: 100%;
+  }
+
+  .start-mode .emotion-bar {
+    min-width: 100%;
+    padding: 6px 8px;
+  }
+
+  .start-mode .hdr-actions {
+    flex-wrap: wrap;
+  }
+
+  .start-mode .btn-sm {
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  .start-screen {
+    min-height: 100vh;
+    padding: 134px var(--sp-s) 32px;
+  }
+
+  .start-screen .start-title {
+    line-height: 1.25;
+  }
+
+  .start-screen .start-desc {
+    font-size: 14px;
+  }
+
+  .start-screen .start-btns {
+    width: min(100%, 240px);
+  }
+
+  body:not(.start-mode) .hdr {
+    width: calc(100% - 12px);
+    padding: 12px 10px 10px;
+  }
+
+  body:not(.start-mode) .emotion-bar {
+    min-width: 100%;
+    grid-template-columns: auto 1fr auto;
+  }
+
+  body:not(.start-mode) .btn-sm {
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  body:not(.start-mode) .ctn {
+    padding: 16px 6px 32px;
+  }
+
+  body:not(.start-mode) .ch-t {
+    font-size: 18px;
+    padding: 6px 12px;
+  }
+
+  body:not(.start-mode) .st-t {
+    padding: 16px 14px;
+  }
+
+  body:not(.start-mode) .ch-c {
+    padding: 14px 14px 14px 18px;
+  }
+
+  body:not(.start-mode) .end-c {
+    padding: 22px 14px;
+  }
+}
+  </style>
+</head>
+<body>
+  <header class="hdr">
+    <div class="hdr-top">
+      <h1>象与骑象人</h1>
+      <span class="hdr-sub">互动叙事游戏</span>
+    </div>
+    <div class="emotion-panel" id="emotion-panel">
+      <div class="emotion-bar el">
+        <span class="bar-label">象的力量</span>
+        <div class="bar-track"><div class="bar-fill" id="bar-el" style="width:50%"></div></div>
+        <span class="bar-val" id="val-el">50</span>
+      </div>
+      <div class="emotion-bar ri">
+        <span class="bar-label">骑象人</span>
+        <div class="bar-track"><div class="bar-fill" id="bar-ri" style="width:50%"></div></div>
+        <span class="bar-val" id="val-ri">50</span>
+      </div>
+      <div class="emotion-bar ha">
+        <span class="bar-label">和谐度</span>
+        <div class="bar-track"><div class="bar-fill" id="bar-ha" style="width:50%"></div></div>
+        <span class="bar-val" id="val-ha">50</span>
+      </div>
+    </div>
+    <div class="hdr-actions">
+      <button class="btn-sm" id="btn-save">存档</button>
+      <button class="btn-sm" id="btn-restart">重新开始</button>
+    </div>
+  </header>
+
+  <main class="ctn" id="game-container">
+    <div id="start-screen" class="start-screen">
+      <h2 class="start-title">象与骑象人</h2>
+      <p class="start-desc">你的内心住着一头大象和一个骑象人。<br>大象是情绪，骑象人是理性。<br>你的每一个选择，都在书写他们之间的关系。</p>
+      <div class="start-btns">
+        <button class="btn btn-primary" id="btn-new">开始新旅程</button>
+        <button class="btn btn-outline" id="btn-continue" style="display:none">继续旅程</button>
+      </div>
+      <p class="start-tip">基于《象与骑象人》积极心理学理论 · 纯本地运行 · 无需联网</p>
+    </div>
+
+    <div id="game-screen" style="display:none">
+      <div id="progress" class="forest-progress">
+        <span id="progress-text" class="progress-label">第 1 章 / 共 5 章</span>
+        <svg class="forest-svg" viewBox="0 0 800 96" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+          <rect x="8" y="13" width="784" height="70" rx="35" fill="#F6F2E8" opacity="0.82"/>
+          <path d="M28 60 C103 44 181 44 257 55 C336 67 420 68 502 54 C580 41 662 40 772 58" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.98"/>
+          <path d="M28 60 C103 44 181 44 257 55 C336 67 420 68 502 54 C580 41 662 40 772 58" fill="none" stroke="#1A1A1A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M28 60 C103 44 181 44 257 55 C336 67 420 68 502 54 C580 41 662 40 772 58" fill="none" stroke="#6D6A65" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 9" opacity="0.6"/>
+
+          <g font-family="sans-serif" font-size="8" font-weight="700" text-anchor="middle">
+            <g>
+              <circle cx="80" cy="55" r="10.5" fill="#F8F6F0" stroke="#171717" stroke-width="1.6"/>
+              <text x="80" y="58" fill="#171717">1</text>
+            </g>
+            <g>
+              <circle cx="240" cy="52" r="10.5" fill="#F8F6F0" stroke="#171717" stroke-width="1.6"/>
+              <text x="240" y="55" fill="#171717">2</text>
+            </g>
+            <g>
+              <circle cx="400" cy="61" r="10.5" fill="#F8F6F0" stroke="#171717" stroke-width="1.6"/>
+              <text x="400" y="64" fill="#171717">3</text>
+            </g>
+            <g>
+              <circle cx="560" cy="50" r="10.5" fill="#F8F6F0" stroke="#171717" stroke-width="1.6"/>
+              <text x="560" y="53" fill="#171717">4</text>
+            </g>
+            <g>
+              <circle cx="720" cy="52" r="10.5" fill="#F8F6F0" stroke="#171717" stroke-width="1.6"/>
+              <text x="720" y="55" fill="#171717">5</text>
+            </g>
+          </g>
+
+          <g>
+            <circle cx="784" cy="58" r="9.5" fill="#171717"/>
+            <circle cx="784" cy="58" r="4.5" fill="#F6F2E8"/>
+          </g>
+
+          <g id="progress-elephant" transform="translate(80, 58)">
+            <image
+              href="./assets/进度条.png"
+              x="-46"
+              y="-62"
+              width="92"
+              height="69"
+              preserveAspectRatio="xMidYMid meet"
+            />
+          </g>
+        </svg>
+      </div>
+      <div id="chapter-title" class="ch-t"></div>
+      <div id="story-text" class="st-t"></div>
+      <div id="choices" class="chs"></div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+var Storage = (function() {
+  var PREFIX = 'elephant_rider_';
+  function save(k, v) {
+    try { localStorage.setItem(PREFIX + k, JSON.stringify(v)); return true; }
+    catch(e) { return false; }
+  }
+  function load(k) {
+    try { var d = localStorage.getItem(PREFIX + k); return d === null ? null : JSON.parse(d); }
+    catch(e) { return null; }
+  }
+  function remove(k) {
+    try { localStorage.removeItem(PREFIX + k); return true; }
+    catch(e) { return false; }
+  }
+  return {
+    save: save,
+    load: load,
+    remove: remove,
+    hasSave: function() { return load('save') !== null; },
+    saveGame: function(state) { return save('save', state); },
+    loadGame: function() { return load('save'); },
+    deleteSave: function() { return remove('save'); }
+  };
+})();
+  </script>
+
+  <script>
+var EmotionTracker = (function() {
+  var elephantPower = 50;
+  var riderControl = 50;
+  var harmonyLevel = 50;
+
+  function getBalanceGap() {
+    return Math.abs(elephantPower - riderControl);
+  }
+
+  function getHarmony() {
+    return harmonyLevel;
+  }
+
+  function getLegacyHarmonyFromBalance() {
+    return clamp(100 - getBalanceGap());
+  }
+
+  function getState() {
+    return {
+      elephantPower: elephantPower,
+      riderControl: riderControl,
+      harmony: getHarmony(),
+      scoreVersion: 2
+    };
+  }
+
+  function clamp(v) {
+    return Math.max(0, Math.min(100, v));
+  }
+
+  function update(type, impact) {
+    var amount = typeof impact === 'number' ? impact : 0;
+
+    if (type === 'elephant') {
+      elephantPower = clamp(elephantPower + amount);
+      harmonyLevel = clamp(harmonyLevel - Math.max(2, Math.round(amount * 0.7)));
+    } else if (type === 'rider') {
+      riderControl = clamp(riderControl + amount);
+      harmonyLevel = clamp(harmonyLevel - Math.max(2, Math.round(amount * 0.7)));
+    } else if (type === 'harmony') {
+      harmonyLevel = clamp(harmonyLevel + amount);
+    }
+    return getState();
+  }
+
+  function reset() {
+    elephantPower = 50;
+    riderControl = 50;
+    harmonyLevel = 50;
+  }
+
+  function setState(s) {
+    elephantPower = typeof s.elephantPower === 'number' ? s.elephantPower : 50;
+    riderControl = typeof s.riderControl === 'number' ? s.riderControl : 50;
+    harmonyLevel = s.scoreVersion === 2 && typeof s.harmony === 'number'
+      ? clamp(s.harmony)
+      : getLegacyHarmonyFromBalance();
+  }
+
+  function getEndingType() {
+    var diff = elephantPower - riderControl;
+    var gap = Math.abs(diff);
+
+    if (gap <= 8 && harmonyLevel >= 85 && elephantPower <= 60 && riderControl <= 60) return 'harmony';
+    if (gap <= 18) return 'balance';
+    if (diff > 0) return 'elephant';
+    return 'rider';
+  }
+
+  return {
+    update: update,
+    getState: getState,
+    getHarmony: getHarmony,
+    reset: reset,
+    setState: setState,
+    getEndingType: getEndingType
+  };
+})();
+  </script>
+
+  <script>
+var StoryData = {nodes:{
+
+"chapter1_node1": {
+  id: "chapter1_node1",
+  chapter: "第一章：遇见你的象",
+  text: "期中成绩出来了。\n\n你盯着手机屏幕上的绩点，那个数字像一盆冷水从头浇下来——比预期低了太多。你明明熬了好几个通宵复习，明明觉得自己考得还行，可结果就是这样不讲道理。\n\n室友小陈从上铺探下头来：'怎么样？我3.8，还行吧。'\n\n你把手机扣在桌上，什么也说不出来。胸口涌上一股说不清的闷气，又堵又胀，像有什么东西要炸开。\n\n你盯着桌上那摞厚厚的课本，突然想一把全推到地上。",
+  options: [
+    { text: "推！就是想推，看着它们就烦", type: "elephant", emotionImpact: 8, nextNodeId: "chapter1_node2a" },
+    { text: "深呼吸，告诉自己别跟别人比，冷静下来", type: "rider", emotionImpact: 6, nextNodeId: "chapter1_node2b" },
+    { text: "停下来，仔细感受这股闷气——它到底在说什么？", type: "harmony", emotionImpact: 5, nextNodeId: "chapter1_node2c" }
+  ]
+},
+
+"chapter1_node2a": {
+  id: "chapter1_node2a",
+  chapter: "第一章：遇见你的象",
+  text: "课本哗啦啦散了一地，有一本还把水杯碰倒了，水泼了一桌。\n\n那一瞬间，你确实感到了一丝痛快。但紧接着，看着满地的书和湿透的笔记，挫败感不但没消失，反而多了一层懊恼。\n\n你蹲下来捡书，手指翻到一页密密麻麻的笔记——那是你凌晨两点一个字一个字写的。你盯着那些字迹，突然意识到：刚才那个推书的冲动，好像不是'你'——它来得太快、太猛，像是另一个人在替你做决定。\n\n那个'人'根本不在乎你的笔记有多辛苦。",
+  options: [
+    { text: "心里有些害怕，不知道自己怎么了", type: "elephant", emotionImpact: 5, nextNodeId: "chapter1_node3" },
+    { text: "告诉自己只是太累了，睡一觉就好", type: "rider", emotionImpact: 4, nextNodeId: "chapter1_node3" }
+  ]
+},
+
+"chapter1_node2b": {
+  id: "chapter1_node2b",
+  chapter: "第一章：遇见你的象",
+  text: "你用力吸了一口气，又缓缓吐出来。课本还好好的摞在桌上，水杯也稳稳当当。\n\n理性告诉你，推书解决不了任何问题。你成功地压住了那股冲动，但那股闷气并没有消失——它只是被你塞进了某个角落，像一头被关在笼子里的野兽，不安地踱步。\n\n你拿起手机刷了会儿朋友圈，表面上恢复了平静，但胸口那种堵堵的感觉还在。你看到同学晒实习offer、晒奖学金，每一条都像一根小刺，扎在你已经够难受的心上。\n\n你隐约觉得，那股被你压下去的力量，并没有真的离开。",
+  options: [
+    { text: "关掉手机，强迫自己去看下一节课的课件", type: "rider", emotionImpact: 5, nextNodeId: "chapter1_node3" },
+    { text: "承认那股闷气还在，试着不去赶走它", type: "harmony", emotionImpact: 4, nextNodeId: "chapter1_node3" }
+  ]
+},
+
+"chapter1_node2c": {
+  id: "chapter1_node2c",
+  chapter: "第一章：遇见你的象",
+  text: "你没有推书，也没有急着让自己冷静。你只是坐在那里，像观察一个陌生人一样观察自己的闷气。\n\n它在哪里？好像在胸口，闷闷的，像一团灰色的雾。\n它想说什么？好像在喊：'我已经很努力了！为什么还是不够好！'\n\n你第一次注意到，这股闷气并不是你的敌人——它更像是一个委屈的同伴，在用激烈的方式引起你的注意。就像一头巨大的象，被困在狭小的空间里，不安地甩着鼻子。\n\n它不是在跟你作对，它只是太累了，太想被看见了。",
+  options: [
+    { text: "对这股闷气说：我听到你了", type: "harmony", emotionImpact: 6, nextNodeId: "chapter1_node3" },
+    { text: "虽然有点理解了，但还是想赶紧摆脱它", type: "rider", emotionImpact: 3, nextNodeId: "chapter1_node3" }
+  ]
+},
+
+"chapter1_node3": {
+  id: "chapter1_node3",
+  chapter: "第一章：遇见你的象",
+  text: "下午是小组汇报。\n\n你站在讲台上，PPT翻到第三页，突然脑子一片空白。你看着台下几十双眼睛，嘴巴像被粘住了一样，一个字也说不出来。\n\n沉默持续了大概五秒，但你觉得像过了五分钟。旁边的组员小声提醒你，你才回过神来，磕磕巴巴地讲完了剩下的内容。\n\n走下讲台的那一刻，你的脸烧得发烫。你感到一股热流从胸口直冲上来——那是羞耻，纯粹的、本能的羞耻。你的拳头不自觉地攥紧了。\n\n回到座位上，你只想把自己缩成一个点，消失在教室的角落里。",
+  options: [
+    { text: "在心里狠狠骂自己：怎么这么丢人！", type: "elephant", emotionImpact: 9, nextNodeId: "chapter1_node4a" },
+    { text: "假装什么都没发生，挤出微笑继续听课", type: "rider", emotionImpact: 7, nextNodeId: "chapter1_node4b" },
+    { text: "承认自己很尴尬，告诉自己紧张是正常的", type: "harmony", emotionImpact: 5, nextNodeId: "chapter1_node4c" }
+  ]
+},
+
+"chapter1_node4a": {
+  id: "chapter1_node4a",
+  chapter: "第一章：遇见你的象",
+  text: "你在心里把自己骂了一百遍：废物、丢人、别人怎么都没事就你出丑……\n\n下课后，你拒绝了同学一起吃饭的邀请，一个人快步走回宿舍。路上你一直在回放那个画面——脑子空白、嘴巴发僵、台下安静的那五秒。\n\n你想起《象与骑象人》里的话：情感反应的速度远快于理性判断。你的羞耻在你思考之前就已经爆发了，就像一头受惊的象，横冲直撞。\n\n而骑象人——你的理性——只能在事后拼命自责，好像骂自己就能弥补什么。但你越骂，心里越难受，那头象越是不安。",
+  options: [
+    { text: "懊恼自己总是这样，控制不住情绪", type: "rider", emotionImpact: 4, nextNodeId: "chapter1_node5" },
+    { text: "虽然方式不对，但至少说明我很在意", type: "harmony", emotionImpact: 3, nextNodeId: "chapter1_node5" }
+  ]
+},
+
+"chapter1_node4b": {
+  id: "chapter1_node4b",
+  chapter: "第一章：遇见你的象",
+  text: "你听到自己用轻松的语气说'没事没事'，但你的脸还在发烫，手心全是汗。\n\n同学聊起了别的话题，你跟着笑，跟着点头，但那个在讲台上卡住的画面一直在你脑子里循环播放。\n\n你成功地在别人面前维持了体面，但那股羞耻并没有消失——它只是被你按了暂停键，随时可能找到另一个出口。\n\n你想起成绩出来时压下去的闷气。那次你压住了，这次你又压住了。但每一次压制，都像是给一头大象套上更紧的锁链——它迟早会挣脱。",
+  options: [
+    { text: "继续忍耐，谁不是这样过来的", type: "rider", emotionImpact: 6, nextNodeId: "chapter1_node5" },
+    { text: "意识到压制不是办法，但也不知道该怎么办", type: "harmony", emotionImpact: 4, nextNodeId: "chapter1_node5" }
+  ]
+},
+
+"chapter1_node4c": {
+  id: "chapter1_node4c",
+  chapter: "第一章：遇见你的象",
+  text: "你在心里对自己说：紧张是正常的，谁上台都会紧张。\n\n奇怪的是，当你承认了自己的羞耻，它反而没那么灼人了。你依然觉得尴尬，但你不再被羞耻推着走——你开始能跟它共处了。\n\n下课后，组员小林走过来：'你第三页的数据分析讲得挺好的，就是中间停了一下，下次提前多练两遍就好了。'\n\n你愣了一下。原来别人看到的，和你自己感受到的，完全不一样。你一直盯着那五秒的空白，却忘了自己其实讲了二十分钟。\n\n就像骑象人没有试图勒住象，而是轻轻拍了拍它的脖子，告诉它：我知道你紧张，但你其实做得还不错。",
+  options: [
+    { text: "这种感觉很好奇，想记住它", type: "harmony", emotionImpact: 6, nextNodeId: "chapter1_node5" },
+    { text: "虽然好一些了，但心里还是觉得丢人", type: "elephant", emotionImpact: 3, nextNodeId: "chapter1_node5" }
+  ]
+},
+
+"chapter1_node5": {
+  id: "chapter1_node5",
+  chapter: "第一章：遇见你的象",
+  text: "晚上，你一个人在操场散步。秋天的晚风带着凉意，路灯把你的影子拉得很长。\n\n今天发生了太多事。你开始回想——成绩出来时的闷气、想推书的冲动、讲台上脑子空白后的羞耻……这些情绪来得快、来得猛，完全不受你控制。\n\n你想起一个比喻：人的内心就像一头大象和一个骑象人。大象力大无穷，反应迅速，它是你的情绪和本能；骑象人弱小但清醒，他是你的理性和意志。\n\n今天，你第一次清楚地看见了你的'象'。\n\n它不是你的敌人，也不是你的主人。它就是你的一部分——一个强大、敏感、需要被理解的部分。",
+  options: [
+    { text: "我想学会和这头象相处", type: "harmony", emotionImpact: 7, nextNodeId: "chapter2_node1" },
+    { text: "我必须更好地控制它，不能让它再闯祸", type: "rider", emotionImpact: 5, nextNodeId: "chapter2_node1" },
+    { text: "它太强了，我有点害怕它", type: "elephant", emotionImpact: 4, nextNodeId: "chapter2_node1" }
+  ]
+},
+
+"chapter2_node1": {
+  id: "chapter2_node1",
+  chapter: "第二章：象的直觉",
+  text: "几天后，你在微信里看到一张照片——你的好朋友们在一起吃火锅，笑得很开心。你没有被邀请。\n\n你的心猛地缩了一下。一股强烈的被排斥感像潮水一样涌上来。你的手指已经在打字了——你甚至还没想清楚要说什么，但那股冲动已经在推着你行动。\n\n这就是象的直觉——它永远比骑象人先做出反应。",
+  options: [
+    { text: "立刻发消息质问：吃火锅怎么不叫我？", type: "elephant", emotionImpact: 8, nextNodeId: "chapter2_node2a" },
+    { text: "告诉自己别多想，可能只是临时起意", type: "rider", emotionImpact: 6, nextNodeId: "chapter2_node2b" },
+    { text: "注意到自己的第一反应，先不急着行动", type: "harmony", emotionImpact: 5, nextNodeId: "chapter2_node2c" }
+  ]
+},
+
+"chapter2_node2a": {
+  id: "chapter2_node2a",
+  chapter: "第二章：象的直觉",
+  text: "你发出了那条消息。几分钟后，朋友回复：'哈哈我们也是刚决定的，想着你周末一般在图书馆，就没叫你啊。下次一定叫你！'\n\n你盯着这条消息，心里说不出是什么感觉。他们不是故意的，可你刚才那股被排斥的感觉是真实的。\n\n你意识到：你的象在看到照片的那一秒，就已经做出了判断——'他们不在乎我'。这个判断快得像闪电，根本没给骑象人思考的时间。\n\n象的直觉永远先于理性分析。有时候它是对的，有时候……它只是用最快的速度保护你。",
+  options: [
+    { text: "心里还是不舒服，觉得他们应该叫我", type: "elephant", emotionImpact: 4, nextNodeId: "chapter2_node3" },
+    { text: "理解了，我的第一反应不一定是事实", type: "harmony", emotionImpact: 5, nextNodeId: "chapter2_node3" }
+  ]
+},
+
+"chapter2_node2b": {
+  id: "chapter2_node2b",
+  chapter: "第二章：象的直觉",
+  text: "你把手机放下，告诉自己：别多想，可能只是临时起意。\n\n但你放下手机后，脑子里一直在回放那张照片。你开始注意细节：谁在场，谁不在，他们的笑是不是有点僵硬……\n你明知这些想法不理智，但它们像野草一样在脑子里疯长。你的理性在试图压制象的直觉，但象根本不听。\n\n因为象不是在'思考'，它是在'感受'。你可以告诉自己别多想，但你无法告诉自己别感受。",
+  options: [
+    { text: "强迫自己专心写论文，不再想这件事", type: "rider", emotionImpact: 5, nextNodeId: "chapter2_node3" },
+    { text: "承认自己受伤了，试着不去否认这个感受", type: "harmony", emotionImpact: 4, nextNodeId: "chapter2_node3" }
+  ]
+},
+
+"chapter2_node2c": {
+  id: "chapter2_node2c",
+  chapter: "第二章：象的直觉",
+  text: "你看着那张照片，注意到自己的第一反应是：'他们不在乎我。'\n\n你没有急着行动，而是问自己：这个判断是事实，还是我的直觉？\n\n你想起《象与骑象人》里的观点：人的大脑会在意识到之前就做出判断。象的直觉先于骑象人的思考——它在你还没想明白发生了什么的时候，就已经给你一个答案。\n\n但这个答案只是一种可能，不是事实。你的象在用最快的速度保护你，但它的保护有时候会误判威胁。",
+  options: [
+    { text: "给朋友发条轻松的消息：下次叫我啊！", type: "harmony", emotionImpact: 5, nextNodeId: "chapter2_node3" },
+    { text: "还是不想联系他们，心里还是难受", type: "elephant", emotionImpact: 3, nextNodeId: "chapter2_node3" }
+  ]
+},
+
+"chapter2_node3": {
+  id: "chapter2_node3",
+  chapter: "第二章：象的直觉",
+  text: "第二天上午，你在食堂打饭。前面排队的同学突然回头和你聊天。\n\n你还没来得及思考，身体已经在回应了——你微微向后退了一步，笑容有点僵硬。你的象在第一时间判断：'这个人不安全'。\n\n但你的骑象人知道，这只是一个不认识的同学在打招呼。你的直觉和事实之间，有一条裂缝。\n\n你想起书里的话：直觉是象的语言，它快速但不精确。骑象人的工作不是否认直觉，而是学会听见它、审视它、然后决定是否跟随它。",
+  options: [
+    { text: "强迫自己放松，试着自然地聊下去", type: "rider", emotionImpact: 5, nextNodeId: "chapter2_node4" },
+    { text: "承认自己紧张，但不让紧张决定行为", type: "harmony", emotionImpact: 6, nextNodeId: "chapter2_node4" },
+    { text: "找个借口赶快离开，实在不想聊", type: "elephant", emotionImpact: 4, nextNodeId: "chapter2_node4" }
+  ]
+},
+
+"chapter2_node4": {
+  id: "chapter2_node4",
+  chapter: "第二章：象的直觉",
+  text: "晚上躺在床上，你回想这几天的经历。\n\n看到朋友聚会照片时的被排斥感、食堂里对陌生同学的警觉……你的象总是在第一时间做出反应，而你的骑象人只能在后面追着跑。\n\n《象与骑象人》说：直觉先行，推理后至。你的大脑会在你意识到之前就做出判断，然后你的理性会努力为这个判断找理由。\n\n但现在你知道了这个秘密，你就可以在直觉和行动之间，插入一个微小的缝隙——一个选择的空间。\n\n你不必否认直觉，但你可以不立刻跟随它。",
+  options: [
+    { text: "我想试试在反应前停顿一下", type: "harmony", emotionImpact: 6, nextNodeId: "chapter3_node1" },
+    { text: "我要训练自己的理性反应更快", type: "rider", emotionImpact: 5, nextNodeId: "chapter3_node1" },
+    { text: "直觉就是我的感觉，我不想压制它", type: "elephant", emotionImpact: 4, nextNodeId: "chapter3_node1" }
+  ]
+},
+
+"chapter3_node1": {
+  id: "chapter3_node1",
+  chapter: "第三章：改变之难",
+  text: "你决定改变。\n\n不再拖延，不再熬夜刷手机，每天晚上十一点前入睡。你甚至写了一份详细的计划表，贴在床头。\n\n第一天，你做到了。第二天，也做到了。你觉得自己终于掌握了主动权。\n\n但第五天晚上，你又在凌晨两点刷短视频。计划表还贴在床头，但你连看都没看它一眼。",
+  options: [
+    { text: "给自己制定更严格的规则，这次一定做到", type: "rider", emotionImpact: 7, nextNodeId: "chapter3_node2a" },
+    { text: "反正已经崩了，算了吧", type: "elephant", emotionImpact: 6, nextNodeId: "chapter3_node2b" },
+    { text: "想想为什么会崩溃，而不是责怪自己", type: "harmony", emotionImpact: 5, nextNodeId: "chapter3_node2c" }
+  ]
+},
+
+"chapter3_node2a": {
+  id: "chapter3_node2a",
+  chapter: "第三章：改变之难",
+  text: "你制定了更严格的规则：晚十一点之后手机关机，违反一次罚自己一周不喝奶茶。\n\n第三天，你又崩了。而且这次崩溃得更彻底——你不仅熬夜了，还多喝了一杯奶茶。惩罚没有让你更守规矩，反而让你觉得'反正已经违反了，干脆彻底放纵'。\n\n你想起书里的话：意志力就像肌肉，是会疲惫的。骑象人再努力，也抽不动一头不想动的象。单纯依靠意志力去改变，就像用一根绳子拉一头大象——绳子会断的。",
+  options: [
+    { text: "我就是没有意志力，太废了", type: "elephant", emotionImpact: 5, nextNodeId: "chapter3_node3" },
+    { text: "也许方法不对，不应该只靠意志力", type: "harmony", emotionImpact: 4, nextNodeId: "chapter3_node3" }
+  ]
+},
+
+"chapter3_node2b": {
+  id: "chapter3_node2b",
+  chapter: "第三章：改变之难",
+  text: "你放弃了。计划表被你撕下来揉成一团扔进了垃圾桶。\n\n但放弃并没有让你轻松。你依然每天熬夜，依然每天自责，依然每天发誓'明天一定早睡'。\n\n你意识到：放弃不是象的选择，象其实从来没有放弃。它只是在走它最熟悉的那条路——熬夜刷手机的路。这条路它已经走了无数遍，闭着眼睛都能走到。\n\n而你想让它走的新路，它一步都不认识。",
+  options: [
+    { text: "我就是做不到，这就是我的命", type: "elephant", emotionImpact: 5, nextNodeId: "chapter3_node3" },
+    { text: "也许问题不是我不够努力，而是方式不对", type: "harmony", emotionImpact: 4, nextNodeId: "chapter3_node3" }
+  ]
+},
+
+"chapter3_node2c": {
+  id: "chapter3_node2c",
+  chapter: "第三章：改变之难",
+  text: "你没有责怪自己，而是认真想了想：为什么会崩溃？\n\n晚上十一点，你其实不困。你只是觉得'再刷一会儿就睡'。然后一刷就到了两点。这不是理性的决定，这是象的惯性。\n\n你想起《象与骑象人》的观点：改变之所以难，不是因为你不够努力，而是因为象在走老路。它不是在跟你作对，它只是习惯了那条路。\n\n单纯的意志力拉不动象。你需要的不是更用力地拉绳子，而是找到一条让象愿意走的新路。",
+  options: [
+    { text: "怎样才能让象愿意走新路？", type: "harmony", emotionImpact: 6, nextNodeId: "chapter3_node3" },
+    { text: "我还是觉得应该靠意志力克服", type: "rider", emotionImpact: 3, nextNodeId: "chapter3_node3" }
+  ]
+},
+
+"chapter3_node3": {
+  id: "chapter3_node3",
+  chapter: "第三章：改变之难",
+  text: "你决定试一种新方法。\n\n不是制定更严的规则，而是改变环境。你把手机充电器放在客厅，不带进卧室。你在床头放了一本书，代替手机成为睡前最后触摸的东西。\n\n奇怪的是，这比任何规则都有效。你不是在'忍住'不玩手机，而是根本就没有手机可以玩。象不需要抵抗诱惑，因为诱惑不在那里。\n\n你想起书里的话：与其训练象抵抗诱惑，不如改变象走的路。环境的力量远大于意志力。",
+  options: [
+    { text: "原来不是我的问题，是方法的问题", type: "harmony", emotionImpact: 6, nextNodeId: "chapter3_node4" },
+    { text: "这感觉好像在逃避，不是真正的克服", type: "rider", emotionImpact: 3, nextNodeId: "chapter3_node4" }
+  ]
+},
+
+"chapter3_node4": {
+  id: "chapter3_node4",
+  chapter: "第三章：改变之难",
+  text: "你在笔记本上写下了几句话：\n\n改变不是战争，不是骑象人拼命拉住象。改变是修路——给象铺一条它愿意走的路。\n\n意志力是有限的。与其消耗意志力去抵抗诱惑，不如把诱惑移出象的视野。\n\n你不是废物，你只是一个还在学习和象相处的人。而这个学习的过程，本身就是成长。",
+  options: [
+    { text: "我想继续了解更多", type: "harmony", emotionImpact: 6, nextNodeId: "chapter4_node1" },
+    { text: "我还是觉得应该更强硬一点", type: "rider", emotionImpact: 4, nextNodeId: "chapter4_node1" },
+    { text: "我还是很担心自己做不到", type: "elephant", emotionImpact: 3, nextNodeId: "chapter4_node1" }
+  ]
+},
+
+"chapter4_node1": {
+  id: "chapter4_node1",
+  chapter: "第四章：幸福的错觉",
+  text: "学期末，你拿到了奖学金。\n\n这是你一直想要的。你记得看到公示的那一刻，心里像爆开了烟花，全身都轻飘飘的。你迫不及待地把消息发给父母，发到朋友圈。\n\n但三天后，你发现自己已经不怎么想这件事了。生活一切如常，课还是那些课，作业还是那些作业，心情似乎并没有因为奖学金而变得更好。\n\n你有点困惑。为什么得到了想要的，幸福却没有想象中那么持久？",
+  options: [
+    { text: "可能还不够好，我需要更大的成就", type: "rider", emotionImpact: 6, nextNodeId: "chapter4_node2a" },
+    { text: "觉得有点空落，说不清为什么", type: "elephant", emotionImpact: 5, nextNodeId: "chapter4_node2b" },
+    { text: "好奇为什么快乐消失得这么快", type: "harmony", emotionImpact: 5, nextNodeId: "chapter4_node2c" }
+  ]
+},
+
+"chapter4_node2a": {
+  id: "chapter4_node2a",
+  chapter: "第四章：幸福的错觉",
+  text: "你告诉自己：奖学金只是起点，下一步要拿国家奖学金，然后考研，然后找到好工作……\n\n但你突然觉得很累。当你把幸福等同于'下一个目标'的时候，幸福永远在前方，永远到不了。\n\n你想起《象与骑象人》里的'适应原则'：人会快速适应好事，然后回到原来的幸福基线。升职加薪如此，奖学金也是如此。\n\n如果幸福不是'得到更多'，那它到底是什么？",
+  options: [
+    { text: "不知道，但感觉不是这条路", type: "harmony", emotionImpact: 4, nextNodeId: "chapter4_node3" },
+    { text: "我不信，只是还不够好而已", type: "rider", emotionImpact: 4, nextNodeId: "chapter4_node3" }
+  ]
+},
+
+"chapter4_node2b": {
+  id: "chapter4_node2b",
+  chapter: "第四章：幸福的错觉",
+  text: "你说不清那种空落感是什么。你明明得到了想要的，可心里像是被掏空了一块，填不满。\n\n你开始想：下一个目标是什么？考研？实习？如果那些也实现了，会更幸福吗？还是会像现在一样，快乐几天就消失？\n\n你的象在追逐快乐，但每一次追到，快乐就像水一样从指缝间流走。",
+  options: [
+    { text: "那就继续追下一个目标吧", type: "elephant", emotionImpact: 4, nextNodeId: "chapter4_node3" },
+    { text: "也许幸福不是追逐得到的东西", type: "harmony", emotionImpact: 5, nextNodeId: "chapter4_node3" }
+  ]
+},
+
+"chapter4_node2c": {
+  id: "chapter4_node2c",
+  chapter: "第四章：幸福的错觉",
+  text: "你想起《象与骑象人》里的一个概念：适应原则。\n\n人的幸福感有一个基线。好事发生时，你会短暂地超过基线，但很快就会适应并回到原来的水平。升职加薪如此，奖学金也是如此。\n\n这不是你的问题，这是人类大脑的设计。象会快速适应新环境，然后开始寻找下一个刺激。这个机制帮助人类存活，但它也让我们永远觉得'还不够'。\n\n如果幸福不是'得到更多'，那它到底是什么？",
+  options: [
+    { text: "也许幸福不是追逐得到的东西", type: "harmony", emotionImpact: 6, nextNodeId: "chapter4_node3" },
+    { text: "我不信，只是还没达到足够好的程度", type: "rider", emotionImpact: 3, nextNodeId: "chapter4_node3" }
+  ]
+},
+
+"chapter4_node3": {
+  id: "chapter4_node3",
+  chapter: "第四章：幸福的错觉",
+  text: "周末，你的室友小陈情绪低落，一个人蹲在宿舍门口。他说家里出了点事，他很担心但又不知道能做什么。\n\n你坐在他旁边，也不知道说什么。你只是静静地陪着他。\n\n过了一会儿，小陈说：'谢谢你在。'\n\n那一刻，你感到了一种奇怪的温暖。它和拿奖学金的快乐不一样——那种快乐像烟花，亮一下就没了。而这种温暖像火苗，很小，但稳定。\n\n你突然明白了什么。",
+  options: [
+    { text: "幸福不是得到更多，而是和人连接", type: "harmony", emotionImpact: 7, nextNodeId: "chapter4_node4" },
+    { text: "但我还是想要那些成就感", type: "rider", emotionImpact: 4, nextNodeId: "chapter4_node4" },
+    { text: "被需要的感觉真好，但我不敢总指望别人", type: "elephant", emotionImpact: 3, nextNodeId: "chapter4_node4" }
+  ]
+},
+
+"chapter4_node4": {
+  id: "chapter4_node4",
+  chapter: "第四章：幸福的错觉",
+  text: "你在笔记本上写下：\n\n幸福不是拥有更多，而是感受当下。\n幸福不是追逐目标，而是投入关系。\n幸福不是没有痛苦，而是在痛苦中仍然能感到意义。\n\n你想起《象与骑象人》的话：真正的幸福来自三个源头——良好的关系、投入的工作、超越自我的意义感。\n\n象在追逐快乐，骑象人在追逐成就。但真正的幸福，是当象和骑象人都投入到同一件事里的时候。",
+  options: [
+    { text: "我想找到属于我的幸福方式", type: "harmony", emotionImpact: 7, nextNodeId: "chapter5_node1" },
+    { text: "我还是觉得成就很重要", type: "rider", emotionImpact: 4, nextNodeId: "chapter5_node1" },
+    { text: "我只希望不再这么累", type: "elephant", emotionImpact: 3, nextNodeId: "chapter5_node1" }
+  ]
+},
+
+"chapter5_node1": {
+  id: "chapter5_node1",
+  chapter: "第五章：与象共舞",
+  text: "学期末，你的论文被导师要求大改。与此同时，你最好的朋友告诉你，她决定去外地实习，下学期就不在学校了。\n\n两件事叠在一起，压力像潮水一样涌来。你的象想要崩溃、想要逃避、想要放弃。你的骑象人在拼命拉住缰绳，告诉自己坚持住。\n\n但这一次，你做了一个不一样的选择。",
+  options: [
+    { text: "先不急着解决，给自己一个小时的空间", type: "harmony", emotionImpact: 6, nextNodeId: "chapter5_node2" },
+    { text: "立刻开始改论文，不能再拖了", type: "rider", emotionImpact: 5, nextNodeId: "chapter5_node2" },
+    { text: "想哭，就让自己哭一场吧", type: "elephant", emotionImpact: 5, nextNodeId: "chapter5_node2" }
+  ]
+},
+
+"chapter5_node2": {
+  id: "chapter5_node2",
+  chapter: "第五章：与象共舞",
+  text: "你在校园的长椅上坐下来，感受着内心的风暴。\n\n象在喊：'我受够了！我不想再撑了！'\n骑象人在说：'先改论文，再去见朋友，一件一件来。'\n\n以前，你会选边——要么被象拖着走，要么用力拉住它。但现在，你学会了第三种选择。\n\n你对象说：'我知道你很累，我也累。但我们不需要现在就解决一切。我们只需要先做一件事。'\n\n象停下了踱步。它没有安静，但它听到了你的声音。",
+  options: [
+    { text: "先去见朋友，告别比论文更重要", type: "harmony", emotionImpact: 6, nextNodeId: "chapter5_node3" },
+    { text: "先改论文，正事要紧", type: "rider", emotionImpact: 5, nextNodeId: "chapter5_node3" },
+    { text: "先给自己倒杯热水，喝完再说", type: "elephant", emotionImpact: 4, nextNodeId: "chapter5_node3" }
+  ]
+},
+
+"chapter5_node3": {
+  id: "chapter5_node3",
+  chapter: "第五章：与象共舞",
+  text: "你做完了那件事，又做了下一件。不是因为你很强大，而是因为你学会了一件事：\n\n你不需要打败象，也不需要被象打败。\n你需要的是和象一起走。\n\n这一天，你给即将去外地实习的朋友写了一封长长的信。你没有说'别走'，而是说'谢谢你这些年的陪伴，我会想你的'。写完之后，你哭了，但哭完之后，心里轻了很多。\n\n象在流泪，骑象人也在流泪。但这一次，他们朝着同一个方向了。",
+  options: [
+    { text: "继续往前走", type: "harmony", emotionImpact: 7, nextNodeId: "chapter5_node4" }
+  ]
+},
+
+"chapter5_node4": {
+  id: "chapter5_node4",
+  chapter: "第五章：与象共舞",
+  text: "学期结束了。\n\n你坐在宿舍的窗台上，看着外面的天空。回想这个学期，你经历了很多。\n\n你遇见了你的象——那个强大、敏感、有时会横冲直撞的部分。你学会了不去压制它，也不去放纵它，而是理解它。\n\n你认识了象的直觉——它永远比理性先做出反应，但你学会了在直觉和行动之间，插入一个微小的缝隙。\n\n你理解了改变之难——与其用意志力拉象，不如给象铺一条它愿意走的路。\n\n你看见了幸福的真相——它不在远方，它在关系里，在投入里，在意义里。\n\n而最重要的是，你学会了与象共舞。\n\n这不是终点。这是开始。",
+  options: [
+    { text: "看看这段旅程的结局", type: "harmony", emotionImpact: 0, nextNodeId: "ending_router" }
+  ]
+},
+
+"ending_harmony": {
+  id: "ending_harmony",
+  chapter: "终章：象骑合一",
+  text: "",
+  endingType: "harmony",
+  endingTitle: "象骑合一",
+  endingSubtitle: "你找到了内心的平衡",
+  endingIcon: "\uD83C\uDF1F",
+  endingText: "你的象和骑象人终于学会了并肩而行。\n\n象不再横冲直撞，它知道骑象人会倾听它的声音。骑象人不再拼命拉缰绳，他知道象的力量是前进的动力，而不是需要驯服的野兽。\n\n当你感到焦虑时，你不再压抑它，而是对象说：'我知道你害怕，我们一起面对。'\n当你想要冲动时，你不再放纵它，而是问自己：'这是象的直觉，还是我真正想要的？'\n当你感到疲惫时，你不再强迫自己，而是允许自己休息。\n\n象和骑象人不再是对手，而是伙伴。他们一起走过了风雨，也一起看见了彩虹。",
+  endingInsight: "心理学启示：真正的内心和谐，不是消灭情绪，也不是被情绪支配，而是让理性与情感成为盟友。当你学会倾听内心的象，同时保持骑象人的清醒，你就拥有了最强大的内在力量。这不是终点，而是一段新旅程的开始。",
+  options: []
+},
+
+"ending_balance": {
+  id: "ending_balance",
+  chapter: "终章：紧绷平衡",
+  text: "",
+  endingType: "balance",
+  endingTitle: "紧绷平衡",
+  endingSubtitle: "你勉强稳住了自己，但还没有真正放松下来",
+  endingIcon: "\u2696\uFE0F",
+  endingText: "你的象和骑象人暂时维持住了平衡，但那种平衡更像是一种绷着的稳定。\n\n象没有彻底失控，骑象人也没有完全压住它。你能继续往前走，能把日子过下去，能在关键时刻让自己不至于偏离太远。但你心里很清楚，这份稳定还带着一点紧，一点累，一点随时可能再失衡的疲惫。\n\n当焦虑出现时，你已经不会立刻被它拖走；可你也还没学会真正安心地陪它待一会儿。当理性接管时，你能把事情撑住；可你有时仍然是在咬着牙坚持，而不是发自内心地顺着自己。\n\n你已经走到了一个很重要的位置：你不再只是被象拖着跑，也不再只会把象死死按住。只是现在的你，还在学习如何把这份平衡，从'勉强维持'变成'自然同行'。",
+  endingInsight: "心理学启示：平衡不等于和谐。很多人成长到某个阶段，已经能在情绪和理性之间维持秩序，却仍然活得很紧。这个阶段并不失败，它恰恰说明你正在进步。接下来要练习的，不只是控制或压制，而是让象真正信任骑象人，让理性不再只会管理，也开始学会理解。",
+  options: []
+},
+
+"ending_elephant": {
+  id: "ending_elephant",
+  chapter: "终章：被象驱使",
+  text: "",
+  endingType: "elephant",
+  endingTitle: "被象驱使",
+  endingSubtitle: "你的情绪常常带着你奔跑",
+  endingIcon: "\uD83D\uDC18",
+  endingText: "你的象太强了，骑象人总是追不上它。\n\n当焦虑来袭，你被它推着跑——熬夜、暴食、逃避，事后又陷入自责。当愤怒爆发，你来不及思考就已经伤害了身边的人。当悲伤涌来，你被它淹没，找不到出口。\n\n你的象不是在跟你作对，它只是在用最原始的方式保护你。但它的保护太猛烈了，常常伤到你自己。\n\n骑象人不是不存在，他只是太弱了。他需要学会的不是更用力地拉缰绳，而是先学会听懂象的语言。",
+  endingInsight: "心理学启示：被情绪驱使不是你的错。象的力量远大于骑象人，这是人类大脑的设计。但你可以从小事开始练习——在冲动和行动之间插入一个停顿，哪怕只有三秒。这三秒，就是骑象人追上象的开始。",
+  options: []
+},
+
+"ending_rider": {
+  id: "ending_rider",
+  chapter: "终章：压抑崩溃",
+  text: "",
+  endingType: "rider",
+  endingTitle: "压抑崩溃",
+  endingSubtitle: "你太习惯用理性压制情绪了",
+  endingIcon: "\uD83E\uDDD1",
+  endingText: "你的骑象人太用力了，象已经被勒得喘不过气。\n\n你总是告诉自己'要冷静'、'别多想'、'忍一忍就过去了'。你用理性为自己筑起了一道墙，把所有的焦虑、悲伤、愤怒都挡在墙外。\n\n但那些情绪并没有消失。它们在墙后积蓄力量，越来越重，越来越沉。你知道总有一天，那道墙会撑不住。\n\n你的象不是你的敌人，它是你最忠实的伙伴。它在用情绪告诉你一些重要的事——你累了，你受伤了，你需要被看见。但骑象人一直在说：'别闹，现在不是时候。'",
+  endingInsight: "心理学启示：压抑情绪不等于管理情绪。被压制的象不会消失，它只会在某个时刻以更猛烈的方式爆发。真正的情绪管理，是允许自己感受，然后选择如何回应。试着对象说一句：'我听到你了'——这可能是改变的开始。",
+  options: []
+}
+
+}};
+  </script>
+
+  <script>
+var Engine = (function() {
+  var currentNode = null;
+  var callbacks = [];
+  var choiceHistory = [];
+
+  function loadNode(nodeId) {
+    if (!nodeId) return null;
+    if (nodeId === 'ending_router') {
+      var endingType = EmotionTracker.getEndingType();
+      var endingId = 'ending_' + endingType;
+      return loadNode(endingId);
+    }
+    var node = StoryData.nodes[nodeId];
+    if (!node) {
+      console.error('Node not found:', nodeId);
+      return null;
+    }
+    return JSON.parse(JSON.stringify(node));
+  }
+
+  function goToNode(nodeId) {
+    var node = loadNode(nodeId);
+    if (!node) {
+      console.error('Failed to go to node:', nodeId);
+      return false;
+    }
+    currentNode = node;
+    for (var i = 0; i < callbacks.length; i++) {
+      callbacks[i](currentNode);
+    }
+    return true;
+  }
+
+  function makeChoice(optionIndex) {
+    if (!currentNode || !currentNode.options || !currentNode.options[optionIndex]) {
+      console.error('Invalid choice:', optionIndex);
+      return false;
+    }
+    var option = currentNode.options[optionIndex];
+    choiceHistory.push({
+      nodeId: currentNode.id,
+      optionIndex: optionIndex,
+      optionText: option.text,
+      optionType: option.type,
+      emotionImpact: option.emotionImpact
+    });
+    EmotionTracker.update(option.type, option.emotionImpact);
+    autoSave();
+    return goToNode(option.nextNodeId);
+  }
+
+  function autoSave() {
+    var state = {
+      nodeId: currentNode ? currentNode.id : 'chapter1_node1',
+      emotion: EmotionTracker.getState(),
+      choiceHistory: choiceHistory.slice(),
+      timestamp: Date.now()
+    };
+    Storage.saveGame(state);
+  }
+
+  function loadSave() {
+    var state = Storage.loadGame();
+    if (!state) return false;
+    EmotionTracker.setState(state.emotion);
+    choiceHistory = state.choiceHistory || [];
+    return goToNode(state.nodeId);
+  }
+
+  return {
+    goToNode: goToNode,
+    getCurrentNode: function() { return currentNode; },
+    onNodeChange: function(cb) { if (typeof cb === 'function') callbacks.push(cb); },
+    makeChoice: makeChoice,
+    getChoiceHistory: function() { return choiceHistory.slice(); },
+    start: function(startId) {
+      choiceHistory = [];
+      EmotionTracker.reset();
+      Storage.deleteSave();
+      return goToNode(startId || 'chapter1_node1');
+    },
+    loadSave: loadSave,
+    hasSave: function() { return Storage.hasSave(); },
+    save: autoSave
+  };
+})();
+  </script>
+
+  <script>
+(function() {
+  var startScreen = document.getElementById('start-screen');
+  var gameScreen = document.getElementById('game-screen');
+  var chapterTitle = document.getElementById('chapter-title');
+  var storyText = document.getElementById('story-text');
+  var choicesContainer = document.getElementById('choices');
+  var progressText = document.getElementById('progress-text');
+  var progressElephant = document.getElementById('progress-elephant');
+  var barEl = document.getElementById('bar-el');
+  var barRi = document.getElementById('bar-ri');
+  var barHa = document.getElementById('bar-ha');
+  var valEl = document.getElementById('val-el');
+  var valRi = document.getElementById('val-ri');
+  var valHa = document.getElementById('val-ha');
+  var btnSave = document.getElementById('btn-save');
+  var btnRestart = document.getElementById('btn-restart');
+  var btnNew = document.getElementById('btn-new');
+  var btnContinue = document.getElementById('btn-continue');
+  var toastEl = document.getElementById('toast');
+
+  var TOTAL_CHAPTERS = 5;
+  var typewriterTimer = null;
+  var isTyping = false;
+  var progressAnimFrame = null;
+
+  var chapterPositions = {
+    1: { x: 80, y: 58 },
+    2: { x: 240, y: 54 },
+    3: { x: 400, y: 63 },
+    4: { x: 560, y: 52 },
+    5: { x: 720, y: 54 },
+    6: { x: 784, y: 60 }
+  };
+
+  function animateProgressElephant(targetPoint) {
+    if (progressAnimFrame) cancelAnimationFrame(progressAnimFrame);
+    var currentTransform = progressElephant.getAttribute('transform') || 'translate(80, 58)';
+    var match = currentTransform.match(/translate\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*\)/);
+    var startX = match ? parseFloat(match[1]) : 80;
+    var startY = match ? parseFloat(match[2]) : 58;
+    var startTime = null;
+    var duration = 800;
+
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      var progress = Math.min((timestamp - startTime) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var x = startX + (targetPoint.x - startX) * eased;
+      var baseY = startY + (targetPoint.y - startY) * eased;
+      var motionLift = Math.sin(progress * Math.PI) * 2.4;
+      var y = baseY - motionLift;
+      progressElephant.setAttribute('transform', 'translate(' + x + ', ' + y + ')');
+      if (progress < 1) {
+        progressAnimFrame = requestAnimationFrame(step);
+      }
+    }
+    progressAnimFrame = requestAnimationFrame(step);
+  }
+
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(function() { toastEl.classList.remove('show'); }, 2000);
+  }
+
+  function getChapterNumber(nodeId) {
+    if (nodeId.indexOf('ending_') === 0) return TOTAL_CHAPTERS + 1;
+    var match = nodeId.match(/chapter(\d+)_/);
+    return match ? parseInt(match[1]) : 1;
+  }
+
+  function updateProgress(nodeId) {
+    var ch = getChapterNumber(nodeId);
+    if (nodeId.indexOf('ending_') === 0) {
+      progressText.textContent = '终章';
+      animateProgressElephant(chapterPositions[6]);
+    } else {
+      progressText.textContent = '第 ' + ch + ' 章 / 共 ' + TOTAL_CHAPTERS + ' 章';
+      animateProgressElephant(chapterPositions[ch] || chapterPositions[1]);
+    }
+  }
+
+  function updateEmotionBars() {
+    var state = EmotionTracker.getState();
+    barEl.style.width = state.elephantPower + '%';
+    barRi.style.width = state.riderControl + '%';
+    barHa.style.width = state.harmony + '%';
+    valEl.textContent = Math.round(state.elephantPower);
+    valRi.textContent = Math.round(state.riderControl);
+    valHa.textContent = Math.round(state.harmony);
+  }
+
+  function updateBackground() {
+    var harmony = EmotionTracker.getHarmony();
+    if (harmony >= 70) {
+      document.body.style.backgroundColor = '#FFF8E1';
+    } else if (harmony >= 40) {
+      document.body.style.backgroundColor = '#FDF6EC';
+    } else {
+      document.body.style.backgroundColor = '#E8EAF6';
+    }
+  }
+
+  function typeText(text, element, callback) {
+    if (typewriterTimer) {
+      clearInterval(typewriterTimer);
+      typewriterTimer = null;
+    }
+    isTyping = true;
+    element.classList.add('typing');
+    element.textContent = '';
+    var skipHint = element.querySelector('.skip-hint');
+    if (!skipHint) {
+      skipHint = document.createElement('span');
+      skipHint.className = 'skip-hint';
+      skipHint.textContent = '点击跳过';
+      element.appendChild(skipHint);
+    }
+    skipHint.style.display = '';
+
+    var i = 0;
+    var speed = 25;
+    typewriterTimer = setInterval(function() {
+      if (i < text.length) {
+        element.insertBefore(document.createTextNode(text[i]), skipHint);
+        i++;
+      } else {
+        clearInterval(typewriterTimer);
+        typewriterTimer = null;
+        isTyping = false;
+        element.classList.remove('typing');
+        skipHint.style.display = 'none';
+        if (callback) callback();
+      }
+    }, speed);
+  }
+
+  function skipTypewriter(element, text) {
+    if (typewriterTimer) {
+      clearInterval(typewriterTimer);
+      typewriterTimer = null;
+    }
+    isTyping = false;
+    element.classList.remove('typing');
+    var skipHint = element.querySelector('.skip-hint');
+    if (skipHint) skipHint.style.display = 'none';
+    element.textContent = text;
+  }
+
+  storyText.addEventListener('click', function() {
+    if (isTyping && currentNode) {
+      skipTypewriter(storyText, currentNode.text);
+    }
+  });
+
+  var currentNode = null;
+
+  function renderNode(node) {
+    currentNode = node;
+    chapterTitle.textContent = node.chapter;
+    choicesContainer.innerHTML = '';
+    updateProgress(node.id);
+    updateEmotionBars();
+    updateBackground();
+
+    chapterTitle.classList.remove('visible');
+    storyText.classList.remove('visible');
+    storyText.style.display = '';
+
+    setTimeout(function() { chapterTitle.classList.add('visible'); }, 50);
+    setTimeout(function() { storyText.classList.add('visible'); }, 150);
+
+    if (node.endingType) {
+      renderEnding(node);
+      return;
+    }
+
+    typeText(node.text, storyText);
+
+    if (!node.options || node.options.length === 0) return;
+
+    for (var i = 0; i < node.options.length; i++) {
+      (function(idx) {
+        var option = node.options[idx];
+        var choiceDiv = document.createElement('div');
+        choiceDiv.className = 'ch-c ' + option.type;
+        var textDiv = document.createElement('div');
+        textDiv.textContent = option.text;
+        choiceDiv.appendChild(textDiv);
+        choiceDiv.addEventListener('click', function() {
+          Engine.makeChoice(idx);
+        });
+        choicesContainer.appendChild(choiceDiv);
+
+        setTimeout(function() {
+          choiceDiv.classList.add('visible');
+        }, 300 + idx * 100);
+      })(i);
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderEnding(node) {
+    storyText.textContent = '';
+    storyText.style.display = 'none';
+
+    var endDiv = document.createElement('div');
+    endDiv.className = 'end-c end-' + node.endingType;
+
+    var icon = document.createElement('div');
+    icon.className = 'end-icon';
+    icon.textContent = node.endingIcon;
+
+    var title = document.createElement('h2');
+    title.textContent = node.endingTitle;
+
+    var subtitle = document.createElement('div');
+    subtitle.className = 'end-subtitle';
+    subtitle.textContent = node.endingSubtitle;
+
+    var text = document.createElement('div');
+    text.className = 'end-text';
+    text.textContent = node.endingText;
+
+    var insight = document.createElement('div');
+    insight.className = 'end-insight';
+    insight.textContent = node.endingInsight;
+
+    var btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:12px;justify-content:center;flex-wrap:wrap;';
+
+    var btnAgent = document.createElement('button');
+    btnAgent.className = 'btn btn-secondary';
+    btnAgent.textContent = '进入情绪助手';
+    btnAgent.addEventListener('click', function() {
+      window.location.href = '../agent/index.html?from=game&ending=' + encodeURIComponent(node.endingType);
+    });
+
+    var btnRestart2 = document.createElement('button');
+    btnRestart2.className = 'btn btn-primary';
+    btnRestart2.textContent = '重新开始';
+    btnRestart2.addEventListener('click', function() {
+      document.body.classList.add('start-mode');
+      startScreen.style.display = '';
+      playStartReveal();
+      gameScreen.style.display = 'none';
+      Engine.start();
+    });
+
+    btnRow.appendChild(btnAgent);
+    btnRow.appendChild(btnRestart2);
+
+    endDiv.appendChild(icon);
+    endDiv.appendChild(title);
+    endDiv.appendChild(subtitle);
+    endDiv.appendChild(text);
+    endDiv.appendChild(insight);
+    endDiv.appendChild(btnRow);
+    choicesContainer.appendChild(endDiv);
+
+    setTimeout(function() { endDiv.classList.add('visible'); }, 300);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showGame() {
+    document.body.classList.remove('start-mode');
+    startScreen.style.display = 'none';
+    gameScreen.style.display = '';
+  }
+
+  function playStartReveal() {
+    startScreen.classList.remove('start-animate');
+    void startScreen.offsetWidth;
+    startScreen.classList.add('start-animate');
+  }
+
+  btnNew.addEventListener('click', function() {
+    if (Storage.hasSave()) {
+      if (!confirm('开始新游戏将覆盖已有存档，确定吗？')) return;
+    }
+    showGame();
+    Engine.start();
+  });
+
+  btnContinue.addEventListener('click', function() {
+    showGame();
+    Engine.loadSave();
+  });
+
+  btnSave.addEventListener('click', function() {
+    Engine.save();
+    showToast('存档成功！');
+  });
+
+  btnRestart.addEventListener('click', function() {
+    if (confirm('确定要重新开始吗？当前进度将会丢失。')) {
+      document.body.classList.add('start-mode');
+      startScreen.style.display = '';
+      playStartReveal();
+      gameScreen.style.display = 'none';
+      Engine.start();
+      Engine.start();
+      showToast('已重新开始');
+    }
+  });
+
+  if (Storage.hasSave()) {
+    btnContinue.style.display = '';
+  }
+
+  if (startScreen.style.display !== 'none') {
+    document.body.classList.add('start-mode');
+    playStartReveal();
+  }
+
+  Engine.onNodeChange(renderNode);
+})();
+  </script>
+</body>
+</html>

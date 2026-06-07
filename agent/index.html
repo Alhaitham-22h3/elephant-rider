@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>情绪助手 | 象与骑象人</title>
+  <script src="../shared/js/canonical-entry.js"></script>
+  <link rel="stylesheet" href="../shared/css/common.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main class="agent-page page-shell">
+    <div class="container">
+      <section class="card agent-hero text-center">
+        <div class="agent-badge eyebrow">情绪助手</div>
+        <h1>陪你整理当下的感受</h1>
+        <p id="agent-subtitle" class="agent-subtitle">
+          你可以用一句话描述你现在的状态，我会先给出一段简短回应，陪你开始梳理。
+        </p>
+      </section>
+
+      <section class="card chat-card">
+        <div class="chat-header">
+          <h2>对话区</h2>
+          <button id="btn-reset" class="btn btn-outline btn-sm" type="button">重新开始</button>
+        </div>
+
+        <div id="chat-messages" class="chat-messages">
+          <div class="message message-agent">
+            <div class="message-role">情绪助手</div>
+            <div id="welcome-bubble" class="message-bubble">
+              你好，我是情绪助手。你可以告诉我你现在最真实的感受，我会先陪你梳理一下。
+            </div>
+          </div>
+        </div>
+
+        <div class="input-area">
+          <label class="input-label" for="user-input">输入你现在的感受</label>
+          <textarea
+            id="user-input"
+            class="input-textarea"
+            placeholder="例如：我最近总是很焦虑，晚上睡不好。"
+          ></textarea>
+          <div class="input-actions">
+            <button id="btn-send" class="btn btn-primary" type="button">发送</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card disclaimer-card">
+        <h2>安全说明</h2>
+        <p>
+          本工具用于日常情绪觉察与自我调节，不替代专业心理咨询、心理治疗或医学诊断。
+        </p>
+        <p>
+          它更适合轻中度、日常性的情绪困扰支持。如果你正处于强烈危机状态，或存在伤害自己、伤害他人的风险，请及时联系家人、老师、学校心理中心、医院或当地专业热线。
+        </p>
+        <p>
+          如果输入内容中出现“想死”“不想活”“自残”“伤害自己”“伤害别人”等高风险表达，系统会优先提示你寻求现实中的支持，而不是继续普通建议流程。
+        </p>
+      </section>
+
+      <section class="card logs-card">
+        <div class="logs-header">
+          <h2>历史日志</h2>
+          <p>这里会显示最近保存的情绪记录。</p>
+        </div>
+        <div id="logs-list" class="logs-list">
+          <div class="logs-empty">正在加载日志...</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="../shared/js/runtime-config.js"></script>
+  <script src="js/emotion.js"></script>
+  <script src="js/theory.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>

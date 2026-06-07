@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>存储工具测试</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .test-section {
+      margin-bottom: var(--spacing-lg);
+    }
+    .test-section h3 {
+      margin-bottom: var(--spacing-md);
+    }
+    .result-box {
+      background-color: var(--color-bg-neutral);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      min-height: 60px;
+      font-family: monospace;
+      font-size: var(--font-size-sm);
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-top: var(--spacing-sm);
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+      margin-top: var(--spacing-sm);
+    }
+    .status-pass {
+      color: var(--color-harmony);
+      font-weight: 600;
+    }
+    .status-fail {
+      color: var(--color-danger);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center mt-lg mb-lg">存储工具测试页面</h1>
+    <p class="text-center text-rider mb-lg">验证 storage.js 的存、取、删、清空功能</p>
+
+    <div class="test-section card">
+      <h3>1. 基础存取测试</h3>
+      <p>测试 save() 和 load() 函数</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="testSave()">保存数据</button>
+        <button class="btn btn-secondary" onclick="testLoad()">读取数据</button>
+      </div>
+      <div id="basicResult" class="result-box">等待操作...</div>
+    </div>
+
+    <div class="test-section card">
+      <h3>2. 删除测试</h3>
+      <p>测试 remove() 函数</p>
+      <div class="btn-group">
+        <button class="btn btn-outline" onclick="testRemove()">删除数据</button>
+        <button class="btn btn-secondary" onclick="testLoadAfterRemove()">删除后读取</button>
+      </div>
+      <div id="removeResult" class="result-box">等待操作...</div>
+    </div>
+
+    <div class="test-section card">
+      <h3>3. 清空测试</h3>
+      <p>测试 clearAll() 函数</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="testSaveMultiple()">保存多条数据</button>
+        <button class="btn btn-danger" onclick="testClearAll()">清空所有</button>
+        <button class="btn btn-secondary" onclick="testGetAllKeys()">查看剩余键</button>
+      </div>
+      <div id="clearResult" class="result-box">等待操作...</div>
+    </div>
+
+    <div class="test-section card">
+      <h3>4. 游戏存档测试</h3>
+      <p>测试 saveGame() 和 loadGame() 函数</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="testSaveGame()">保存游戏</button>
+        <button class="btn btn-secondary" onclick="testLoadGame()">读取存档</button>
+      </div>
+      <div id="gameResult" class="result-box">等待操作...</div>
+    </div>
+
+    <div class="test-section card">
+      <h3>5. 情绪记录测试</h3>
+      <p>测试 saveEmotion() 和 getEmotions() 函数</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="testSaveEmotion()">记录情绪</button>
+        <button class="btn btn-secondary" onclick="testGetEmotions()">查看情绪记录</button>
+      </div>
+      <div id="emotionResult" class="result-box">等待操作...</div>
+    </div>
+
+    <div class="test-section card card-harmony">
+      <h3>6. 一键全部测试</h3>
+      <div class="btn-group">
+        <button class="btn btn-lg btn-primary" onclick="runAllTests()">运行全部测试</button>
+      </div>
+      <div id="allTestResult" class="result-box">等待操作...</div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    function showToast(message) {
+      var toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(function() {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function setResult(elementId, content) {
+      document.getElementById(elementId).textContent = content;
+    }
+
+    function testSave() {
+      var result = Storage.save('testKey', { name: '象与骑象人', value: 42 });
+      setResult('basicResult', '保存结果: ' + (result ? '✅ 成功' : '❌ 失败'));
+      showToast('数据已保存');
+    }
+
+    function testLoad() {
+      var data = Storage.load('testKey');
+      setResult('basicResult', '读取结果: ' + JSON.stringify(data, null, 2));
+      showToast('数据已读取');
+    }
+
+    function testRemove() {
+      Storage.save('testKey', { name: '象与骑象人', value: 42 });
+      var result = Storage.remove('testKey');
+      setResult('removeResult', '删除结果: ' + (result ? '✅ 成功' : '❌ 失败'));
+      showToast('数据已删除');
+    }
+
+    function testLoadAfterRemove() {
+      var data = Storage.load('testKey');
+      if (data === null) {
+        setResult('removeResult', '删除后读取: null ✅ (数据已被正确删除)');
+      } else {
+        setResult('removeResult', '删除后读取: ' + JSON.stringify(data) + ' ❌ (数据未被删除)');
+      }
+      showToast('验证完成');
+    }
+
+    function testSaveMultiple() {
+      Storage.save('key1', '数据1');
+      Storage.save('key2', '数据2');
+      Storage.save('key3', '数据3');
+      var keys = Storage.getAllKeys();
+      setResult('clearResult', '已保存3条数据，当前所有键:\n' + JSON.stringify(keys, null, 2));
+      showToast('多条数据已保存');
+    }
+
+    function testClearAll() {
+      var result = Storage.clearAll();
+      setResult('clearResult', '清空结果: ' + (result ? '✅ 成功' : '❌ 失败'));
+      showToast('所有数据已清空');
+    }
+
+    function testGetAllKeys() {
+      var keys = Storage.getAllKeys();
+      setResult('clearResult', '当前所有键:\n' + (keys.length > 0 ? JSON.stringify(keys, null, 2) : '（空，清空成功 ✅）'));
+      showToast('查询完成');
+    }
+
+    function testSaveGame() {
+      var result = Storage.saveGame({
+        nodeId: 'chapter1_node3',
+        elephantPower: 65,
+        riderControl: 40,
+        harmony: 75,
+        choiceHistory: ['chapter1_node1_choice2', 'chapter1_node2_choice1']
+      });
+      setResult('gameResult', '游戏存档结果: ' + (result ? '✅ 成功' : '❌ 失败'));
+      showToast('游戏已保存');
+    }
+
+    function testLoadGame() {
+      var data = Storage.loadGame();
+      setResult('gameResult', '游戏存档数据:\n' + JSON.stringify(data, null, 2));
+      showToast('存档已读取');
+    }
+
+    function testSaveEmotion() {
+      var types = ['焦虑', '悲伤', '愤怒', '迷茫', '孤独', '疲惫'];
+      var randomType = types[Math.floor(Math.random() * types.length)];
+      var randomIntensity = Math.floor(Math.random() * 10) + 1;
+      var result = Storage.saveEmotion({ type: randomType, intensity: randomIntensity });
+      setResult('emotionResult', '情绪记录结果: ' + (result ? '✅ 成功' : '❌ 失败') + '\n记录内容: ' + randomType + ' (强度: ' + randomIntensity + ')');
+      showToast('情绪已记录');
+    }
+
+    function testGetEmotions() {
+      var data = Storage.getEmotions();
+      setResult('emotionResult', '情绪记录列表:\n' + JSON.stringify(data, null, 2));
+      showToast('查询完成');
+    }
+
+    function runAllTests() {
+      var results = [];
+      Storage.clearAll();
+
+      var saveOk = Storage.save('allTest', { value: 100 });
+      results.push('保存: ' + (saveOk ? '✅' : '❌'));
+
+      var loadData = Storage.load('allTest');
+      results.push('读取: ' + (loadData && loadData.value === 100 ? '✅' : '❌'));
+
+      Storage.remove('allTest');
+      var afterRemove = Storage.load('allTest');
+      results.push('删除: ' + (afterRemove === null ? '✅' : '❌'));
+
+      Storage.save('a', 1);
+      Storage.save('b', 2);
+      Storage.clearAll();
+      var keys = Storage.getAllKeys();
+      results.push('清空: ' + (keys.length === 0 ? '✅' : '❌'));
+
+      Storage.saveGame({ nodeId: 'test', elephantPower: 50, riderControl: 50, harmony: 100, choiceHistory: [] });
+      var gameData = Storage.loadGame();
+      results.push('游戏存档: ' + (gameData && gameData.nodeId === 'test' ? '✅' : '❌'));
+
+      Storage.saveEmotion({ type: '焦虑', intensity: 7 });
+      var emotions = Storage.getEmotions();
+      results.push('情绪记录: ' + (emotions.length > 0 && emotions[0].type === '焦虑' ? '✅' : '❌'));
+
+      Storage.clearAll();
+
+      var passCount = results.filter(function(r) { return r.indexOf('✅') > -1; }).length;
+      var allPass = passCount === results.length;
+
+      setResult('allTestResult', results.join('\n') + '\n\n总计: ' + passCount + '/' + results.length + ' 通过 ' + (allPass ? '✅ 全部通过！' : '⚠️ 存在失败项'));
+      showToast(allPass ? '全部测试通过！' : '存在测试失败');
+    }
+  </script>
+</body>
+</html>
