@@ -7,7 +7,7 @@ dotenv.config({
 
 const llmConfig = {
   apiKey: process.env.QWEN_API_KEY || '',
-  model: process.env.QWEN_MODEL || 'Qwen3.7-Plus'
+  model: process.env.QWEN_MODEL || 'qwen-plus-latest'
 };
 
 module.exports = llmConfig;

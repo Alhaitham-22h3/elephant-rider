@@ -138,6 +138,7 @@ router.post('/analyze', async function(req, res) {
       description: ruleBasedResult.description
     });
   } catch (error) {
+    console.error('Qwen fallback triggered:', error.message);
     return res.json(ruleBasedResult);
   }
 });
