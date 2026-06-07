@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>象与骑象人 — 互动叙事游戏</title>
   <script src="../shared/js/canonical-entry.js"></script>
+  <link rel="preload" as="image" href="./assets/背景1.jpg">
+  <link rel="preload" as="image" href="./assets/游戏界面.jpg">
   <style>
 :root {
   --c-el: #E8873A;
@@ -1724,6 +1726,16 @@ var Engine = (function() {
 
   <script>
 (function() {
+  function preloadImage(src) {
+    var image = new Image();
+    image.decoding = 'async';
+    image.src = src;
+    return image;
+  }
+
+  preloadImage('./assets/背景1.jpg');
+  preloadImage('./assets/游戏界面.jpg');
+
   var startScreen = document.getElementById('start-screen');
   var gameScreen = document.getElementById('game-screen');
   var chapterTitle = document.getElementById('chapter-title');
