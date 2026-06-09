@@ -231,6 +231,23 @@ body {
 }
 .btn-sm:hover { border-color: var(--c-el); color: var(--c-el); }
 
+.page-home-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 3px 12px;
+  background: rgba(248, 251, 245, 0.82);
+  border-color: rgba(93, 112, 82, 0.28);
+  box-shadow: 0 14px 28px -20px rgba(20, 34, 23, 0.42);
+  backdrop-filter: blur(8px);
+}
+.page-home-link:hover {
+  background: rgba(240, 245, 237, 0.92);
+  border-color: rgba(93, 112, 82, 0.38);
+  color: #4F6447;
+}
+
 .ctn {
   max-width: 720px;
   margin: 0 auto;
@@ -247,21 +264,49 @@ body {
 .forest-progress {
   margin-bottom: var(--sp-l);
   text-align: center;
+  padding: 12px 12px 14px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 16% 18%, rgba(255, 249, 234, 0.32), transparent 24%),
+    radial-gradient(circle at 82% 78%, rgba(208, 222, 199, 0.2), transparent 26%),
+    linear-gradient(180deg, rgba(248, 250, 246, 0.24), rgba(240, 245, 237, 0.14));
+  border: 1px solid rgba(236, 228, 214, 0.4);
+  box-shadow: 0 18px 34px -28px rgba(20, 34, 23, 0.38);
+  backdrop-filter: blur(8px);
 }
 .forest-progress .progress-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: var(--fs-xs);
-  color: #6A655B;
-  margin-bottom: 10px;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: #55654d;
+  margin-bottom: 12px;
+  padding: 7px 16px;
+  letter-spacing: 0.12em;
+  background: rgba(252, 248, 240, 0.72);
+  border: 1px solid rgba(226, 218, 205, 0.72);
+  border-radius: 999px;
+  box-shadow: 0 10px 22px -20px rgba(20, 34, 23, 0.35);
+}
+.forest-progress .progress-label::before,
+.forest-progress .progress-label::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #F6F0E0 0%, #8EA17C 100%);
+  box-shadow: 0 0 0 3px rgba(142, 161, 124, 0.12);
 }
 .forest-svg {
   width: 100%;
   height: auto;
-  border-radius: var(--r-m);
+  display: block;
+  border-radius: 24px;
   overflow: hidden;
-  background: rgba(247, 243, 235, 0.82);
-  border: 1px solid rgba(26, 25, 23, 0.1);
-  box-shadow: 0 8px 22px rgba(20, 20, 18, 0.05);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .ch-t {
@@ -328,16 +373,6 @@ body {
   overflow: hidden;
 }
 .ch-c.visible { opacity: 1; transform: translateX(0); }
-.ch-c::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  width: 4px;
-  transition: width var(--tr);
-}
-.ch-c.elephant::before { background: var(--c-el); }
-.ch-c.rider::before { background: var(--c-ri); }
-.ch-c.harmony::before { background: var(--c-ha); }
 .ch-c:hover {
   transform: translateY(-2px);
   box-shadow: var(--sh-m);
@@ -778,13 +813,25 @@ body:not(.start-mode) #game-screen {
 
 body:not(.start-mode) .forest-progress {
   margin-bottom: 26px;
+  padding: 14px 14px 16px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(255, 248, 231, 0.34), transparent 22%),
+    radial-gradient(circle at 86% 74%, rgba(197, 214, 186, 0.22), transparent 26%),
+    linear-gradient(180deg, rgba(248, 250, 246, 0.44), rgba(238, 244, 235, 0.2));
+  border: 1px solid rgba(238, 230, 216, 0.5);
+  box-shadow: 0 22px 40px -30px rgba(25, 38, 28, 0.3);
+}
+
+body:not(.start-mode) .forest-progress .progress-label {
+  color: #4B5C43;
+  background: rgba(252, 248, 240, 0.82);
+  border-color: rgba(228, 220, 206, 0.8);
+  box-shadow: 0 14px 24px -22px rgba(20, 34, 23, 0.34);
 }
 
 body:not(.start-mode) .forest-svg {
-  background: rgba(248, 250, 246, 0.76);
-  border: 1px solid rgba(232, 225, 212, 0.54);
-  border-radius: 30px;
-  box-shadow: 0 18px 34px -28px rgba(25, 38, 28, 0.22);
+  border-radius: 28px;
 }
 
 body:not(.start-mode) .ch-t {
@@ -828,14 +875,6 @@ body:not(.start-mode) .ch-c {
   border: 1px solid rgba(232, 225, 212, 0.46);
   border-radius: 28px 34px 26px 38px / 26px 30px 38px 24px;
   box-shadow: 0 16px 30px -28px rgba(25, 38, 28, 0.24);
-}
-
-body:not(.start-mode) .ch-c::before {
-  top: 10px;
-  bottom: 10px;
-  left: 10px;
-  width: 6px;
-  border-radius: 999px;
 }
 
 body:not(.start-mode) .ch-c:hover {
@@ -943,6 +982,7 @@ body:not(.start-mode) .end-c .end-insight {
 
   body:not(.start-mode) .forest-progress {
     margin-bottom: 18px;
+    padding: 12px 10px 14px;
   }
 
   body:not(.start-mode) .forest-svg {
@@ -962,7 +1002,7 @@ body:not(.start-mode) .end-c .end-insight {
   }
 
   body:not(.start-mode) .ch-c {
-    padding: 16px 18px 16px 20px;
+    padding: 16px 18px;
     border-radius: 22px 28px 22px 30px / 22px 26px 30px 20px;
   }
 
@@ -1042,7 +1082,7 @@ body:not(.start-mode) .end-c .end-insight {
   }
 
   body:not(.start-mode) .ch-c {
-    padding: 14px 14px 14px 18px;
+    padding: 14px;
   }
 
   body:not(.start-mode) .end-c {
@@ -1075,6 +1115,7 @@ body:not(.start-mode) .end-c .end-insight {
       </div>
     </div>
     <div class="hdr-actions">
+      <a class="btn-sm page-home-link" href="../index.html">返回起始页</a>
       <button class="btn-sm" id="btn-save">存档</button>
       <button class="btn-sm" id="btn-restart">重新开始</button>
     </div>
@@ -1095,37 +1136,73 @@ body:not(.start-mode) .end-c .end-insight {
       <div id="progress" class="forest-progress">
         <span id="progress-text" class="progress-label">第 1 章 / 共 5 章</span>
         <svg class="forest-svg" viewBox="0 0 800 96" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-          <rect x="8" y="13" width="784" height="70" rx="35" fill="#F6F2E8" opacity="0.82"/>
-          <path d="M28 60 C103 44 181 44 257 55 C336 67 420 68 502 54 C580 41 662 40 772 58" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.98"/>
-          <path d="M28 60 C103 44 181 44 257 55 C336 67 420 68 502 54 C580 41 662 40 772 58" fill="none" stroke="#1A1A1A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M28 60 C103 44 181 44 257 55 C336 67 420 68 502 54 C580 41 662 40 772 58" fill="none" stroke="#6D6A65" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 9" opacity="0.6"/>
+          <defs>
+            <linearGradient id="progressPanelFill" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#F9F6EE"/>
+              <stop offset="55%" stop-color="#F2F5EE"/>
+              <stop offset="100%" stop-color="#E8F0E3"/>
+            </linearGradient>
+            <linearGradient id="progressPathFill" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#D7C4AA"/>
+              <stop offset="46%" stop-color="#A4B492"/>
+              <stop offset="100%" stop-color="#889C78"/>
+            </linearGradient>
+            <linearGradient id="progressDashFill" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FFF9ED" stop-opacity="0.95"/>
+              <stop offset="100%" stop-color="#F1F5EB" stop-opacity="0.68"/>
+            </linearGradient>
+            <radialGradient id="progressGlow" cx="50%" cy="22%" r="70%">
+              <stop offset="0%" stop-color="#FFF8E8" stop-opacity="0.82"/>
+              <stop offset="58%" stop-color="#FFF8E8" stop-opacity="0.18"/>
+              <stop offset="100%" stop-color="#FFF8E8" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="progressSoftShadow" x="-20%" y="-40%" width="140%" height="180%">
+              <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#304029" flood-opacity="0.18"/>
+            </filter>
+            <filter id="markerShadow" x="-60%" y="-60%" width="220%" height="220%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#3E4E39" flood-opacity="0.22"/>
+            </filter>
+          </defs>
 
-          <g font-family="sans-serif" font-size="8" font-weight="700" text-anchor="middle">
+          <rect x="8" y="13" width="784" height="70" rx="35" fill="url(#progressPanelFill)" opacity="0.96"/>
+          <rect x="8" y="13" width="784" height="70" rx="35" fill="url(#progressGlow)" opacity="0.72"/>
+          <rect x="8" y="13" width="784" height="70" rx="35" fill="none" stroke="#FFFFFF" stroke-opacity="0.56" stroke-width="1"/>
+          <path d="M28 60 C103 44 181 44 257 55 C336 67 420 68 502 54 C580 41 662 40 772 58" fill="none" stroke="#FFFDF7" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" opacity="0.88"/>
+          <path d="M28 60 C103 44 181 44 257 55 C336 67 420 68 502 54 C580 41 662 40 772 58" fill="none" stroke="url(#progressPathFill)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#progressSoftShadow)"/>
+          <path d="M28 60 C103 44 181 44 257 55 C336 67 420 68 502 54 C580 41 662 40 772 58" fill="none" stroke="url(#progressDashFill)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 11" opacity="0.84"/>
+
+          <g font-family="'Trebuchet MS', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="8.4" font-weight="700" text-anchor="middle">
             <g>
-              <circle cx="80" cy="55" r="10.5" fill="#F8F6F0" stroke="#171717" stroke-width="1.6"/>
-              <text x="80" y="58" fill="#171717">1</text>
+              <circle cx="80" cy="55" r="13" fill="#FFF9EF" fill-opacity="0.5"/>
+              <circle cx="80" cy="55" r="10.5" fill="#FBF8F1" stroke="#7A8E69" stroke-width="1.8" filter="url(#markerShadow)"/>
+              <text x="80" y="58.2" fill="#4C5D45">1</text>
             </g>
             <g>
-              <circle cx="240" cy="52" r="10.5" fill="#F8F6F0" stroke="#171717" stroke-width="1.6"/>
-              <text x="240" y="55" fill="#171717">2</text>
+              <circle cx="240" cy="52" r="13" fill="#FFF9EF" fill-opacity="0.5"/>
+              <circle cx="240" cy="52" r="10.5" fill="#FBF8F1" stroke="#7A8E69" stroke-width="1.8" filter="url(#markerShadow)"/>
+              <text x="240" y="55.2" fill="#4C5D45">2</text>
             </g>
             <g>
-              <circle cx="400" cy="61" r="10.5" fill="#F8F6F0" stroke="#171717" stroke-width="1.6"/>
-              <text x="400" y="64" fill="#171717">3</text>
+              <circle cx="400" cy="61" r="13" fill="#FFF9EF" fill-opacity="0.5"/>
+              <circle cx="400" cy="61" r="10.5" fill="#FBF8F1" stroke="#7A8E69" stroke-width="1.8" filter="url(#markerShadow)"/>
+              <text x="400" y="64.2" fill="#4C5D45">3</text>
             </g>
             <g>
-              <circle cx="560" cy="50" r="10.5" fill="#F8F6F0" stroke="#171717" stroke-width="1.6"/>
-              <text x="560" y="53" fill="#171717">4</text>
+              <circle cx="560" cy="50" r="13" fill="#FFF9EF" fill-opacity="0.5"/>
+              <circle cx="560" cy="50" r="10.5" fill="#FBF8F1" stroke="#7A8E69" stroke-width="1.8" filter="url(#markerShadow)"/>
+              <text x="560" y="53.2" fill="#4C5D45">4</text>
             </g>
             <g>
-              <circle cx="720" cy="52" r="10.5" fill="#F8F6F0" stroke="#171717" stroke-width="1.6"/>
-              <text x="720" y="55" fill="#171717">5</text>
+              <circle cx="720" cy="52" r="13" fill="#FFF9EF" fill-opacity="0.5"/>
+              <circle cx="720" cy="52" r="10.5" fill="#FBF8F1" stroke="#7A8E69" stroke-width="1.8" filter="url(#markerShadow)"/>
+              <text x="720" y="55.2" fill="#4C5D45">5</text>
             </g>
           </g>
 
           <g>
-            <circle cx="784" cy="58" r="9.5" fill="#171717"/>
-            <circle cx="784" cy="58" r="4.5" fill="#F6F2E8"/>
+            <circle cx="784" cy="58" r="11.5" fill="#FFF8EA" fill-opacity="0.46"/>
+            <circle cx="784" cy="58" r="8.5" fill="#6F865C" filter="url(#markerShadow)"/>
+            <circle cx="784" cy="58" r="3.6" fill="#F7F2E6"/>
           </g>
 
           <g id="progress-elephant" transform="translate(80, 58)">

@@ -61,6 +61,20 @@
   border-radius: 36px 54px 34px 56px / 34px 42px 48px 30px;
 }
 
+.page-quick-actions {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 120;
+}
+
+.page-home-link {
+  background: rgba(248, 251, 245, 0.82);
+  border-color: rgba(93, 112, 82, 0.28);
+  box-shadow: 0 14px 28px -20px rgba(20, 34, 23, 0.42);
+  backdrop-filter: blur(8px);
+}
+
 .agent-badge {
   margin-bottom: var(--spacing-md);
 }
@@ -210,6 +224,12 @@
 }
 
 @media (max-width: 768px) {
+  .page-quick-actions {
+    top: 12px;
+    right: 14px;
+    left: 14px;
+  }
+
   .agent-hero {
     padding: var(--spacing-xl) var(--spacing-md);
   }
@@ -223,6 +243,10 @@
   .chat-header {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .page-home-link {
+    width: 100%;
   }
 
   .chat-messages {
@@ -268,7 +292,7 @@
   }
 
   .agent-hero {
-    padding: 24px 16px;
+    padding: 72px 16px 24px;
     border-radius: 26px;
   }
 
